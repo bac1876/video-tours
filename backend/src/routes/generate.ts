@@ -3,6 +3,7 @@ import { soraService } from '../services/sora.service';
 import { storageService } from '../services/storage.service';
 import { ffmpegService } from '../services/ffmpeg.service';
 import { promptService } from '../services/prompt.service';
+import { visionService } from '../services/vision.service';
 import { validateUrl, validateVideoClips } from '../utils/validation';
 import { asyncHandler } from '../utils/errors';
 import {
@@ -18,7 +19,7 @@ const router = Router();
 router.post(
   '/room-video',
   asyncHandler(async (req: Request, res: Response) => {
-    const { imageUrl, prompt, order }: GenerateRoomVideoRequest = req.body;
+    const { imageUrl, prompt, order, roomDescription }: GenerateRoomVideoRequest = req.body;
 
     if (!imageUrl) {
       return res.status(400).json({
@@ -30,11 +31,25 @@ router.post(
 
     validateUrl(imageUrl);
 
-    const finalPrompt = prompt || promptService.generateRoomPrompt(order || 0);
-
     console.log(`Generating video for room ${order || 0}...`);
     console.log(`Image URL: ${imageUrl}`);
-    console.log(`Prompt: ${finalPrompt}`);
+
+    // Analyze image with GPT-5 Vision if no user description provided
+    let enhancedDescription = roomDescription;
+    if (!roomDescription) {
+      console.log('No room description provided. Analyzing image with GPT Vision...');
+      const visionAnalysis = await visionService.analyzeRoomImage(imageUrl);
+      if (visionAnalysis) {
+        enhancedDescription = visionService.generateSpatialPrompt(visionAnalysis);
+        console.log('Vision-enhanced description:', enhancedDescription);
+      }
+    } else {
+      console.log('Using user-provided description:', roomDescription);
+    }
+
+    const finalPrompt = prompt || promptService.generateRoomPrompt(order || 0, enhancedDescription);
+
+    console.log(`Final prompt: ${finalPrompt}`);
 
     const videoUrl = await soraService.generateVideo(imageUrl, finalPrompt);
 

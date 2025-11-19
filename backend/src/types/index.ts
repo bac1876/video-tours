@@ -3,6 +3,7 @@ export interface Photo {
   url: string;
   filename: string;
   order: number;
+  description?: string;
 }
 
 export interface VideoClip {
@@ -13,8 +14,9 @@ export interface VideoClip {
 
 export interface GenerateRoomVideoRequest {
   imageUrl: string;
-  prompt: string;
+  prompt?: string;
   order: number;
+  roomDescription?: string;
 }
 
 export interface GenerateRoomVideoResponse {

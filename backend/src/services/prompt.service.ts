@@ -15,9 +15,32 @@ const startPositions = [
 ];
 
 export class PromptService {
-  generateRoomPrompt(_roomIndex?: number): string {
-    // Grok-optimized prompt for smooth 360-degree rotation
-    return `Create a smooth 360-degree rotating camera movement as if standing in the center of the room shown in the input image and slowly rotating to view all sides. Maintain a steady position in the middle of the space while the camera pans horizontally around in a complete circle. Take the full video duration to complete one rotation - moving very slowly and gradually. Preserve the exact geometry, layout, decor, and lighting shown in the image. Do NOT hallucinate objects or add elements that are not present. Output a cinematic quality video with smooth, professional rotation suitable for real estate virtual tours.`;
+  generateRoomPrompt(_roomIndex?: number, roomDescription?: string): string {
+    // Simplified prompt using standard cinematography terms
+    let prompt = '';
+
+    if (roomDescription) {
+      // Use room description to create explicit spatial anchors
+      prompt += `This room contains: ${roomDescription}. `;
+      prompt += `Keep all these objects in their exact positions. `;
+    }
+
+    // Camera movement with 150-degree rotation
+    prompt += `Slow horizontal camera pan from left to right covering 150 degrees. `;
+    prompt += `Camera stays in one fixed spot at eye level. `;
+    prompt += `Very slow smooth pan taking the full ${VIDEO_DURATION} seconds. `;
+    prompt += `Do not zoom in or out. `;
+
+    // CRITICAL: Stop before unseen areas
+    prompt += `CRITICAL - Stop camera movement before revealing any wall or area not visible in the input image. `;
+    prompt += `Only pan across areas that are actually shown in the source photo. `;
+    prompt += `If 150 degrees would show unseen areas, STOP the pan earlier. `;
+    prompt += `Do NOT create, synthesize, or imagine any walls, doors, windows, or furniture not in the input image. `;
+    prompt += `The input photo is the ONLY source - do not add anything beyond what's captured there. `;
+
+    prompt += `Maintain exact object positions and lighting from the input image.`;
+
+    return prompt;
   }
 
   generateCustomPrompt(

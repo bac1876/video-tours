@@ -4,6 +4,7 @@ export interface Photo {
   filename: string;
   order: number;
   file?: File;
+  description?: string;
 }
 
 export interface VideoClip {

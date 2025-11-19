@@ -15,6 +15,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [descriptions, setDescriptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
@@ -36,6 +37,9 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
 
     const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
     setPreviews([...previews, ...newPreviews]);
+
+    const newDescriptions = acceptedFiles.map(() => '');
+    setDescriptions([...descriptions, ...newDescriptions]);
   }, [files, previews]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -53,10 +57,18 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
   const removeFile = (index: number) => {
     const newFiles = files.filter((_, i) => i !== index);
     const newPreviews = previews.filter((_, i) => i !== index);
+    const newDescriptions = descriptions.filter((_, i) => i !== index);
 
     URL.revokeObjectURL(previews[index]);
     setFiles(newFiles);
     setPreviews(newPreviews);
+    setDescriptions(newDescriptions);
+  };
+
+  const updateDescription = (index: number, description: string) => {
+    const newDescriptions = [...descriptions];
+    newDescriptions[index] = description;
+    setDescriptions(newDescriptions);
   };
 
   const handleSubmit = () => {
@@ -71,6 +83,7 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
       filename: file.name,
       order: index,
       file,
+      description: descriptions[index] || undefined,
     }));
 
     onUploadComplete(photos);
@@ -149,6 +162,7 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
                 previews.forEach((preview) => URL.revokeObjectURL(preview));
                 setFiles([]);
                 setPreviews([]);
+                setDescriptions([]);
               }}
               disabled={isUploading}
               className="text-sm text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 disabled:opacity-50"
@@ -157,36 +171,46 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
             </button>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {previews.map((preview, index) => (
-              <div key={index} className="relative group">
-                <img
-                  src={preview}
-                  alt={files[index].name}
-                  className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-700"
-                />
-                <button
-                  onClick={() => removeFile(index)}
-                  disabled={isUploading}
-                  className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+              <div key={index} className="relative group border-2 border-gray-200 dark:border-gray-700 rounded-lg p-3 space-y-2">
+                <div className="relative">
+                  <img
+                    src={preview}
+                    alt={files[index].name}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={() => removeFile(index)}
+                    disabled={isUploading}
+                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
                   {files[index].name}
                 </p>
+                <input
+                  type="text"
+                  placeholder="Room description (e.g., Living room, TV on left wall, fireplace on right)"
+                  value={descriptions[index] || ''}
+                  onChange={(e) => updateDescription(index, e.target.value)}
+                  disabled={isUploading}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+                />
               </div>
             ))}
           </div>
