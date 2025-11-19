@@ -5,6 +5,7 @@ A full-stack application that transforms 1-15 home photos into a cinematic virtu
 ## Features
 
 - Upload up to 15 room photos with drag-and-drop interface
+- GPT-5.1 powered room image analysis with spatial understanding
 - Automatic AI-powered video generation for each room (5 second clips)
 - Intelligent room-by-room video stitching with crossfades
 - Multiple output formats:
@@ -27,6 +28,7 @@ A full-stack application that transforms 1-15 home photos into a cinematic virtu
 - **Node.js + Express** - API server
 - **TypeScript** - Type safety
 - **KIE.ai Sora API** - Video generation (60%+ cheaper than OpenAI)
+- **OpenAI GPT-5.1** - Room image analysis with native multimodal vision
 - **FFmpeg** - Video stitching and processing
 - **Sharp** - Image validation
 - **Cloudflare R2** or **AWS S3** - File storage
@@ -39,7 +41,8 @@ A full-stack application that transforms 1-15 home photos into a cinematic virtu
   - macOS: `brew install ffmpeg`
   - Ubuntu: `sudo apt install ffmpeg`
   - Windows: Download from [ffmpeg.org](https://ffmpeg.org/download.html)
-- **KIE.ai API Key** - Get from [kie.ai](https://kie.ai) (60%+ cheaper than OpenAI)
+- **OpenAI API Key** - Get from [platform.openai.com](https://platform.openai.com) (for GPT-5.1 room analysis)
+- **KIE.ai API Key** - Get from [kie.ai](https://kie.ai) (60%+ cheaper than OpenAI for Sora video generation)
 - **Cloudflare R2** or **AWS S3** account and credentials
 
 ## Local Development Setup
@@ -75,8 +78,12 @@ Edit `backend/.env` with your credentials:
 PORT=3001
 NODE_ENV=development
 
-# Sora API (OpenAI)
-SORA_API_KEY=your_openai_api_key_here
+# OpenAI API (for GPT-5.1 room image analysis)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# KIE.ai Sora API (for video generation)
+KIE_API_KEY=your_kie_api_key_here
+KIE_API_URL=https://api.kie.com/v1
 
 # Storage (choose one)
 # AWS S3
