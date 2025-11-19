@@ -221,38 +221,18 @@ Stitch all clips into final videos
 
 ## Production Deployment
 
-### Backend Deployment (Render/Fly.io)
+**See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete deployment instructions.**
 
-#### Using Render
+Quick summary:
+- **Backend:** Deploy to Railway (handles long-running video generation + FFmpeg)
+- **Frontend:** Deploy to Vercel (optimized for Next.js)
 
-1. Create new Web Service on [render.com](https://render.com)
-2. Connect your GitHub repository
-3. Configure:
-   - **Build Command:** `cd backend && npm install && npm run build`
-   - **Start Command:** `cd backend && npm start`
-   - **Environment:** Node
-4. Add environment variables from `.env.example`
-5. Deploy
+Railway and Vercel both auto-deploy from GitHub on every push to `main`.
 
-#### Using Fly.io
-
-```bash
-cd backend
-fly launch
-fly secrets set SORA_API_KEY=your_key AWS_ACCESS_KEY_ID=your_key ...
-fly deploy
-```
-
-### Frontend Deployment (Vercel)
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Deploy:
-```bash
-cd frontend
-vercel
-```
-3. Set environment variables in Vercel dashboard:
-   - `NEXT_PUBLIC_API_URL=https://your-backend-url.com`
+Configuration files included:
+- `backend/railway.json` - Railway configuration
+- `backend/nixpacks.toml` - Auto-installs FFmpeg and Node.js 20
+- `frontend/vercel.json` - Vercel Next.js configuration
 
 ### Storage Setup
 
@@ -288,6 +268,7 @@ videotours/
 │   │   │   └── index.ts           # Route aggregator
 │   │   ├── services/
 │   │   │   ├── sora.service.ts    # Sora API integration
+│   │   │   ├── vision.service.ts  # GPT-5.1 image analysis
 │   │   │   ├── storage.service.ts # S3/R2 storage
 │   │   │   ├── ffmpeg.service.ts  # Video stitching
 │   │   │   └── prompt.service.ts  # Prompt generation
@@ -300,6 +281,8 @@ videotours/
 │   ├── uploads/                   # Temporary file storage
 │   ├── package.json
 │   ├── tsconfig.json
+│   ├── railway.json               # Railway deployment config
+│   ├── nixpacks.toml              # Nixpacks build config (FFmpeg)
 │   └── .env.example
 ├── frontend/
 │   ├── src/
@@ -321,9 +304,12 @@ videotours/
 │   ├── public/
 │   ├── package.json
 │   ├── tsconfig.json
+│   ├── vercel.json                # Vercel deployment config
 │   ├── next.config.js
 │   ├── tailwind.config.js
 │   └── postcss.config.js
+├── CLAUDE.md                      # Project context for Claude Code
+├── DEPLOYMENT.md                  # Deployment guide
 └── README.md
 ```
 
