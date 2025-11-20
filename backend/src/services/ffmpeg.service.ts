@@ -336,14 +336,17 @@ export class FFmpegService {
             .run();
         });
 
-        // Now concatenate with xfade transition
-        const fadeOffset = inputDuration - fadeDuration;
+        // Now concatenate with fade transition
+        // Add fade-out to end of input video and fade-in to start of end screen
+        const fadeStartTime = inputDuration - fadeDuration;
 
         ffmpeg()
           .input(inputPath)
           .input(endScreenPath)
           .complexFilter([
-            `[0:v][1:v]xfade=transition=fade:duration=${fadeDuration}:offset=${fadeOffset},format=yuv420p[outv]`
+            `[0:v]fade=t=out:st=${fadeStartTime}:d=${fadeDuration}[v0]`,
+            `[1:v]fade=t=in:st=0:d=${fadeDuration}[v1]`,
+            `[v0][v1]concat=n=2:v=1:a=0,format=yuv420p[outv]`
           ])
           .outputOptions([
             '-map', '[outv]',
