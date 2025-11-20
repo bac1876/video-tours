@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'Sora Home Walkthrough Generator API',
-    version: '1.1.5',
+    version: '1.1.6',
     endpoints: {
       health: '/api/health',
       upload: 'POST /api/upload',

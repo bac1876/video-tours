@@ -224,11 +224,11 @@ export class FFmpegService {
       console.log('Filter complex:', filterComplex);
 
       ffmpeg(inputPath)
+        .videoFilters(filterComplex)
         .outputOptions([
           '-c:v libx264',
           '-preset slow',
           `-crf ${VIDEO_QUALITY}`,
-          `-vf ${filterComplex}`,
           '-an', // No audio
         ])
         .output(outputPath)
