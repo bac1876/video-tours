@@ -17,7 +17,22 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ];
+
+    // Allow all Vercel deployment URLs (*.vercel.app)
+    const isVercelUrl = origin && origin.endsWith('.vercel.app');
+
+    // Allow if no origin (server-to-server), in allowed list, or Vercel URL
+    if (!origin || allowedOrigins.includes(origin) || isVercelUrl) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
