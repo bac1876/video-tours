@@ -228,7 +228,7 @@ export class FFmpegService {
           '-c:v libx264',
           '-preset slow',
           `-crf ${VIDEO_QUALITY}`,
-          '-vf', filterComplex,
+          `-vf ${filterComplex}`,
           '-an', // No audio
         ])
         .output(outputPath)

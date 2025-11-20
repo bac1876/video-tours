@@ -1,6 +1,12 @@
 FROM node:18-alpine
 
-RUN apk add --no-cache ffmpeg
+# Install FFmpeg with font support for drawtext filter
+RUN apk add --no-cache \
+    ffmpeg \
+    fontconfig \
+    freetype \
+    harfbuzz \
+    ttf-dejavu
 
 WORKDIR /app
 
