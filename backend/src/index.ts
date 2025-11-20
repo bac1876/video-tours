@@ -61,7 +61,7 @@ app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║   Sora Home Walkthrough Generator API                    ║
+║   Sora Home Walkthrough Generator API v1.1               ║
 ║                                                           ║
 ║   Server running on: http://localhost:${PORT}              ║
 ║   Environment: ${process.env.NODE_ENV || 'development'}                                   ║
