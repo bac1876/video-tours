@@ -16,8 +16,21 @@ export class FFmpegService {
 
   constructor() {
     this.uploadsDir = path.join(process.cwd(), 'uploads');
-    if (!fs.existsSync(this.uploadsDir)) {
-      fs.mkdirSync(this.uploadsDir, { recursive: true });
+    this.ensureUploadsDir();
+  }
+
+  private ensureUploadsDir(): void {
+    try {
+      if (!fs.existsSync(this.uploadsDir)) {
+        fs.mkdirSync(this.uploadsDir, { recursive: true, mode: 0o755 });
+        console.log(`Created uploads directory: ${this.uploadsDir}`);
+      }
+      // Verify we can write to the directory
+      fs.accessSync(this.uploadsDir, fs.constants.W_OK);
+      console.log(`Uploads directory is writable: ${this.uploadsDir}`);
+    } catch (error: any) {
+      console.error(`Failed to ensure uploads directory: ${error.message}`);
+      throw new FFmpegError(`Uploads directory not accessible: ${error.message}`);
     }
   }
 
@@ -176,6 +189,12 @@ export class FFmpegService {
     duration: number = 3
   ): Promise<string> {
     return new Promise((resolve, reject) => {
+      try {
+        this.ensureUploadsDir();
+      } catch (error: any) {
+        return reject(error);
+      }
+
       const outputFilename = `text-overlay-${uuidv4()}.mp4`;
       const outputPath = path.join(this.uploadsDir, outputFilename);
 
@@ -236,6 +255,8 @@ export class FFmpegService {
   ): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
+        this.ensureUploadsDir();
+
         const outputFilename = `end-screen-${uuidv4()}.mp4`;
         const outputPath = path.join(this.uploadsDir, outputFilename);
         const endScreenPath = path.join(this.uploadsDir, `end-temp-${uuidv4()}.mp4`);
