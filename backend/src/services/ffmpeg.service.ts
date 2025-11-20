@@ -343,14 +343,13 @@ export class FFmpegService {
           .input(inputPath)
           .input(endScreenPath)
           .complexFilter([
-            `[0:v][1:v]xfade=transition=fade:duration=${fadeDuration}:offset=${fadeOffset}[outv]`
+            `[0:v][1:v]xfade=transition=fade:duration=${fadeDuration}:offset=${fadeOffset},format=yuv420p[outv]`
           ])
           .outputOptions([
             '-map', '[outv]',
             '-c:v libx264',
             '-preset slow',
             `-crf ${VIDEO_QUALITY}`,
-            '-vf', 'format=yuv420p',
             '-an', // No audio
           ])
           .output(outputPath)
