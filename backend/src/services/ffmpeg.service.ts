@@ -231,6 +231,7 @@ export class FFmpegService {
           '-vf', filterComplex,
           '-an', // No audio
         ])
+        .output(outputPath)
         .on('start', (commandLine) => {
           console.log('FFmpeg command:', commandLine);
         })
@@ -254,7 +255,7 @@ export class FFmpegService {
           console.error('FFmpeg error:', error.message);
           reject(new FFmpegError(`Text overlay failed: ${error.message}`));
         })
-        .save(outputPath);
+        .run();
     });
   }
 
