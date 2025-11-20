@@ -336,24 +336,25 @@ export class FFmpegService {
             .run();
         });
 
-        // Now concatenate with fade transition
-        // Add fade-out to end of input video and fade-in to start of end screen
-        const fadeStartTime = inputDuration - fadeDuration;
+        // Now concatenate the videos using concat demuxer (simpler approach)
+        // Create concat list file
+        const concatListPath = path.join(this.uploadsDir, `concat-end-${uuidv4()}.txt`);
+        const concatList = [
+          `file '${inputPath.replace(/\\/g, '/')}'`,
+          `file '${endScreenPath.replace(/\\/g, '/')}'`
+        ].join('\n');
+
+        fs.writeFileSync(concatListPath, concatList);
 
         ffmpeg()
-          .input(inputPath)
-          .input(endScreenPath)
-          .complexFilter([
-            `[0:v]fade=t=out:st=${fadeStartTime}:d=${fadeDuration}[v0]`,
-            `[1:v]fade=t=in:st=0:d=${fadeDuration}[v1]`,
-            `[v0][v1]concat=n=2:v=1:a=0,format=yuv420p[outv]`
-          ])
+          .input(concatListPath)
+          .inputOptions(['-f concat', '-safe 0'])
           .outputOptions([
-            '-map', '[outv]',
             '-c:v libx264',
             '-preset slow',
             `-crf ${VIDEO_QUALITY}`,
-            '-an', // No audio
+            '-an',
+            '-vf format=yuv420p',
           ])
           .output(outputPath)
           .on('start', (commandLine) => {
@@ -363,9 +364,12 @@ export class FFmpegService {
             console.log(`Adding end screen with fade: ${progress.percent?.toFixed(2)}% done`);
           })
           .on('end', () => {
-            console.log(`End screen added with fade: ${outputPath}`);
+            console.log(`End screen added: ${outputPath}`);
             // Cleanup temporary files
             try {
+              if (fs.existsSync(concatListPath)) {
+                fs.unlinkSync(concatListPath);
+              }
               if (fs.existsSync(endScreenPath)) {
                 fs.unlinkSync(endScreenPath);
                 console.log(`Cleaned up temp end screen: ${endScreenPath}`);
@@ -381,8 +385,11 @@ export class FFmpegService {
           })
           .on('error', (error) => {
             console.error('FFmpeg concatenation error:', error.message);
-            // Cleanup temporary end screen on error
+            // Cleanup temporary files on error
             try {
+              if (fs.existsSync(concatListPath)) {
+                fs.unlinkSync(concatListPath);
+              }
               if (fs.existsSync(endScreenPath)) {
                 fs.unlinkSync(endScreenPath);
               }
