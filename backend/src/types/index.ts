@@ -26,8 +26,17 @@ export interface GenerateRoomVideoResponse {
   order: number;
 }
 
+export interface PropertyInfo {
+  address: string;
+  price: string;
+  agentName: string;
+  agentCompany: string;
+  agentPhone: string;
+}
+
 export interface GenerateFullTourRequest {
   clips: VideoClip[];
+  propertyInfo: PropertyInfo;
 }
 
 export interface GenerateFullTourResponse {

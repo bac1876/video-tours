@@ -84,11 +84,20 @@ router.post(
 router.post(
   '/full-tour',
   asyncHandler(async (req: Request, res: Response) => {
-    const { clips }: GenerateFullTourRequest = req.body;
+    const { clips, propertyInfo }: GenerateFullTourRequest = req.body;
 
     validateVideoClips(clips);
 
+    if (!propertyInfo || !propertyInfo.address || !propertyInfo.price) {
+      return res.status(400).json({
+        success: false,
+        error: 'ValidationError',
+        message: 'Property info (address and price) is required',
+      });
+    }
+
     console.log(`Stitching ${clips.length} clips into full tour...`);
+    console.log(`Property: ${propertyInfo.address} - ${propertyInfo.price}`);
 
     const sortedClips = [...clips].sort((a, b) => a.order - b.order);
 
@@ -98,10 +107,31 @@ router.post(
     );
     const clipPaths = await Promise.all(downloadPromises);
 
+    // Add text overlay to first clip
+    console.log('Adding property info overlay to first clip...');
+    const firstClipWithText = await ffmpegService.addTextOverlay(
+      clipPaths[0],
+      propertyInfo.address,
+      propertyInfo.price,
+      3
+    );
+    clipPaths[0] = firstClipWithText;
+
     console.log('Creating horizontal version (1080p)...');
-    const horizontalPath = await ffmpegService.concatenateVideos(
+    const concatenatedPath = await ffmpegService.concatenateVideos(
       clipPaths,
       `tour-${Date.now()}.mp4`
+    );
+
+    // Add end screen with agent info
+    console.log('Adding agent info end screen...');
+    const horizontalPath = await ffmpegService.addEndScreen(
+      concatenatedPath,
+      propertyInfo.agentName,
+      propertyInfo.agentCompany,
+      propertyInfo.agentPhone,
+      3,
+      1
     );
 
     console.log('Creating compressed MLS version...');
@@ -122,6 +152,7 @@ router.post(
 
     ffmpegService.cleanupFiles([
       ...clipPaths,
+      concatenatedPath,
       horizontalPath,
       compressedPath,
       verticalPath,

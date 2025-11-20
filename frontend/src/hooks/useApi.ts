@@ -4,6 +4,7 @@ import {
   Photo,
   VideoClip,
   GeneratedVideos,
+  PropertyInfo,
   UploadResponse,
   GenerateRoomVideoResponse,
   GenerateFullTourResponse,
@@ -104,13 +105,13 @@ export const useGenerateVideos = () => {
     }
   };
 
-  const generateFullTour = async (clips: VideoClip[]): Promise<GeneratedVideos | null> => {
+  const generateFullTour = async (clips: VideoClip[], propertyInfo: PropertyInfo): Promise<GeneratedVideos | null> => {
     setIsGenerating(true);
     setError(null);
     setProgress({ current: 0, total: 1, message: 'Stitching videos together...' });
 
     try {
-      const response = await api.generateFullTour(clips);
+      const response = await api.generateFullTour(clips, propertyInfo);
       return response.videos;
     } catch (err: any) {
       setError(err.message);

@@ -2,10 +2,10 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Photo } from '../types';
+import { Photo, PropertyInfo } from '../types';
 
 interface UploadProps {
-  onUploadComplete: (photos: Photo[]) => void;
+  onUploadComplete: (photos: Photo[], propertyInfo: PropertyInfo) => void;
   isUploading: boolean;
 }
 
@@ -17,6 +17,13 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
   const [previews, setPreviews] = useState<string[]>([]);
   const [descriptions, setDescriptions] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [propertyInfo, setPropertyInfo] = useState<PropertyInfo>({
+    address: '',
+    price: '',
+    agentName: '',
+    agentCompany: '',
+    agentPhone: '',
+  });
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
     setError(null);
@@ -77,6 +84,11 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
       return;
     }
 
+    if (!propertyInfo.address || !propertyInfo.price || !propertyInfo.agentName || !propertyInfo.agentCompany || !propertyInfo.agentPhone) {
+      setError('Please fill in all property and agent information');
+      return;
+    }
+
     const photos: Photo[] = files.map((file, index) => ({
       id: `temp-${index}`,
       url: previews[index],
@@ -86,18 +98,127 @@ export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
       description: descriptions[index] || undefined,
     }));
 
-    onUploadComplete(photos);
+    onUploadComplete(photos, propertyInfo);
+  };
+
+  const formatPhoneNumber = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (cleaned.length <= 3) return cleaned;
+    if (cleaned.length <= 6) return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3)}`;
+    return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6, 10)}`;
+  };
+
+  const handlePhoneChange = (value: string) => {
+    const formatted = formatPhoneNumber(value);
+    setPropertyInfo({ ...propertyInfo, agentPhone: formatted });
+  };
+
+  const formatPrice = (value: string) => {
+    const cleaned = value.replace(/\D/g, '');
+    if (!cleaned) return '';
+    return `$${parseInt(cleaned).toLocaleString()}`;
+  };
+
+  const handlePriceChange = (value: string) => {
+    const formatted = formatPrice(value);
+    setPropertyInfo({ ...propertyInfo, price: formatted });
   };
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Upload Room Photos
+          Property Information
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Upload 1-15 photos of different rooms in your property
+          Enter property details and upload 1-15 room photos
         </p>
+      </div>
+
+      {/* Property Information Form */}
+      <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 space-y-4">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+          Property Details
+        </h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Property Address
+            </label>
+            <input
+              type="text"
+              placeholder="123 Main Street, City, State ZIP"
+              value={propertyInfo.address}
+              onChange={(e) => setPropertyInfo({ ...propertyInfo, address: e.target.value })}
+              disabled={isUploading}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              List Price
+            </label>
+            <input
+              type="text"
+              placeholder="$599,000"
+              value={propertyInfo.price}
+              onChange={(e) => handlePriceChange(e.target.value)}
+              disabled={isUploading}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Agent Name
+            </label>
+            <input
+              type="text"
+              placeholder="John Smith"
+              value={propertyInfo.agentName}
+              onChange={(e) => setPropertyInfo({ ...propertyInfo, agentName: e.target.value })}
+              disabled={isUploading}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Company
+            </label>
+            <input
+              type="text"
+              placeholder="ABC Realty"
+              value={propertyInfo.agentCompany}
+              onChange={(e) => setPropertyInfo({ ...propertyInfo, agentCompany: e.target.value })}
+              disabled={isUploading}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              placeholder="(555) 123-4567"
+              value={propertyInfo.agentPhone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              disabled={isUploading}
+              maxLength={14}
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="text-center space-y-2">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+          Upload Room Photos
+        </h3>
       </div>
 
       <div

@@ -4,6 +4,7 @@ import {
   GenerateRoomVideoResponse,
   GenerateFullTourResponse,
   VideoClip,
+  PropertyInfo,
 } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -67,7 +68,7 @@ export const api = {
     return response.data;
   },
 
-  async generateFullTour(clips: VideoClip[]): Promise<GenerateFullTourResponse> {
+  async generateFullTour(clips: VideoClip[], propertyInfo: PropertyInfo): Promise<GenerateFullTourResponse> {
     const response = await apiClient.post<GenerateFullTourResponse>(
       '/api/generate/full-tour',
       {
@@ -75,6 +76,7 @@ export const api = {
           url: clip.url,
           order: clip.order,
         })),
+        propertyInfo,
       }
     );
 

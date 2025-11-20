@@ -6,19 +6,20 @@ import Reorder from '../components/Reorder';
 import Status from '../components/Status';
 import Download from '../components/Download';
 import { useUpload, useGenerateVideos } from '../hooks/useApi';
-import { Photo, VideoClip, GeneratedVideos, AppStep } from '../types';
+import { Photo, VideoClip, GeneratedVideos, AppStep, PropertyInfo } from '../types';
 
 export default function Home() {
   const [step, setStep] = useState<AppStep>('upload');
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [clips, setClips] = useState<VideoClip[]>([]);
+  const [propertyInfo, setPropertyInfo] = useState<PropertyInfo | null>(null);
   const [finalVideos, setFinalVideos] = useState<GeneratedVideos | null>(null);
   const [generationStep, setGenerationStep] = useState<'generating-clips' | 'stitching' | 'complete'>('generating-clips');
 
   const { upload, isUploading, error: uploadError } = useUpload();
   const { generateAllVideos, generateFullTour, isGenerating, error: generateError, progress } = useGenerateVideos();
 
-  const handleUploadComplete = async (uploadedPhotos: Photo[]) => {
+  const handleUploadComplete = async (uploadedPhotos: Photo[], uploadedPropertyInfo: PropertyInfo) => {
     const photosWithFiles = uploadedPhotos.map((photo) => ({
       ...photo,
       file: photo.file!,
@@ -32,6 +33,7 @@ export default function Home() {
         file: photosWithFiles[index].file,
       }));
       setPhotos(photosWithUrls);
+      setPropertyInfo(uploadedPropertyInfo);
       setStep('reorder');
     }
   };
@@ -55,7 +57,7 @@ export default function Home() {
       setClips(generatedClips);
       setGenerationStep('stitching');
 
-      const videos = await generateFullTour(generatedClips);
+      const videos = await generateFullTour(generatedClips, propertyInfo!);
 
       if (videos) {
         setFinalVideos(videos);
@@ -73,6 +75,7 @@ export default function Home() {
     setStep('upload');
     setPhotos([]);
     setClips([]);
+    setPropertyInfo(null);
     setFinalVideos(null);
     setGenerationStep('generating-clips');
   };

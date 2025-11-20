@@ -69,7 +69,7 @@ export class FFmpegService {
             '-c:v libx264',
             '-preset slow',
             `-crf ${VIDEO_QUALITY}`,
-            '-c:a aac',
+            '-an',
             '-vf format=yuv420p',
           ])
           .output(outputPath)
@@ -113,8 +113,7 @@ export class FFmpegService {
           '-b:v 3M',
           '-maxrate 3M',
           '-bufsize 6M',
-          '-c:a aac',
-          '-b:a 128k',
+          '-an',
           '-vf format=yuv420p',
         ])
         .output(outputPath)
@@ -147,7 +146,7 @@ export class FFmpegService {
           '-c:v libx264',
           '-preset slow',
           `-crf ${VIDEO_QUALITY}`,
-          '-c:a aac',
+          '-an',
           '-vf',
           'scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2:black,format=yuv420p',
         ])
@@ -167,6 +166,152 @@ export class FFmpegService {
           reject(new FFmpegError(`Vertical conversion failed: ${error.message}`));
         })
         .run();
+    });
+  }
+
+  async addTextOverlay(
+    inputPath: string,
+    address: string,
+    price: string,
+    duration: number = 3
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const outputPath = inputPath.replace('.mp4', '_with_text.mp4');
+
+      console.log(`Adding text overlay (${duration}s): ${address}, ${price}`);
+
+      // Escape special characters for FFmpeg drawtext
+      const escapedAddress = address.replace(/:/g, '\\:').replace(/'/g, "\\'");
+      const escapedPrice = price.replace(/:/g, '\\:').replace(/'/g, "\\'");
+
+      ffmpeg(inputPath)
+        .outputOptions([
+          '-c:v libx264',
+          '-preset slow',
+          `-crf ${VIDEO_QUALITY}`,
+          '-vf',
+          `drawtext=text='${escapedAddress}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3:enable='lt(t,${duration})',` +
+          `drawtext=text='${escapedPrice}':fontsize=80:fontcolor=white:x=(w-text_w)/2:y=h/2:enable='lt(t,${duration})',` +
+          'format=yuv420p',
+          '-an', // No audio
+        ])
+        .output(outputPath)
+        .on('start', (commandLine) => {
+          console.log('FFmpeg command:', commandLine);
+        })
+        .on('progress', (progress) => {
+          console.log(`Adding text overlay: ${progress.percent?.toFixed(2)}% done`);
+        })
+        .on('end', () => {
+          console.log(`Text overlay complete: ${outputPath}`);
+          resolve(outputPath);
+        })
+        .on('error', (error) => {
+          console.error('FFmpeg error:', error.message);
+          reject(new FFmpegError(`Text overlay failed: ${error.message}`));
+        })
+        .run();
+    });
+  }
+
+  async addEndScreen(
+    inputPath: string,
+    agentName: string,
+    agentCompany: string,
+    agentPhone: string,
+    duration: number = 3,
+    fadeDuration: number = 1
+  ): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const outputPath = inputPath.replace('.mp4', '_with_end.mp4');
+        const endScreenPath = path.join(this.uploadsDir, `end-${uuidv4()}.mp4`);
+
+        console.log(`Creating end screen with agent info (${duration}s display, ${fadeDuration}s fade)`);
+
+        // Get input video duration for fade offset
+        const inputDuration = await this.getVideoDuration(inputPath);
+
+        // Escape special characters for FFmpeg drawtext
+        const escapedName = agentName.replace(/:/g, '\\:').replace(/'/g, "\\'");
+        const escapedCompany = agentCompany.replace(/:/g, '\\:').replace(/'/g, "\\'");
+        const escapedPhone = agentPhone.replace(/:/g, '\\:').replace(/'/g, "\\'");
+
+        // First, create black end screen with text
+        await new Promise<void>((resolveEndScreen, rejectEndScreen) => {
+          ffmpeg()
+            .input('color=c=black:s=1920x1080:d=' + duration)
+            .inputFormat('lavfi')
+            .outputOptions([
+              '-c:v libx264',
+              '-preset slow',
+              `-crf ${VIDEO_QUALITY}`,
+              '-vf',
+              `drawtext=text='${escapedName}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
+              `drawtext=text='${escapedCompany}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
+              `drawtext=text='${escapedPhone}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
+              'format=yuv420p',
+              '-an', // No audio
+            ])
+            .output(endScreenPath)
+            .on('start', (commandLine) => {
+              console.log('Creating end screen - FFmpeg command:', commandLine);
+            })
+            .on('end', () => {
+              console.log(`End screen created: ${endScreenPath}`);
+              resolveEndScreen();
+            })
+            .on('error', (error) => {
+              console.error('End screen creation error:', error.message);
+              rejectEndScreen(error);
+            })
+            .run();
+        });
+
+        // Now concatenate with xfade transition
+        const fadeOffset = inputDuration - fadeDuration;
+
+        ffmpeg()
+          .input(inputPath)
+          .input(endScreenPath)
+          .complexFilter([
+            `[0:v][1:v]xfade=transition=fade:duration=${fadeDuration}:offset=${fadeOffset}[outv]`
+          ])
+          .outputOptions([
+            '-map', '[outv]',
+            '-c:v libx264',
+            '-preset slow',
+            `-crf ${VIDEO_QUALITY}`,
+            '-vf', 'format=yuv420p',
+            '-an', // No audio
+          ])
+          .output(outputPath)
+          .on('start', (commandLine) => {
+            console.log('Concatenating with fade - FFmpeg command:', commandLine);
+          })
+          .on('progress', (progress) => {
+            console.log(`Adding end screen with fade: ${progress.percent?.toFixed(2)}% done`);
+          })
+          .on('end', () => {
+            console.log(`End screen added with fade: ${outputPath}`);
+            // Cleanup temporary end screen
+            if (fs.existsSync(endScreenPath)) {
+              fs.unlinkSync(endScreenPath);
+            }
+            resolve(outputPath);
+          })
+          .on('error', (error) => {
+            console.error('FFmpeg concatenation error:', error.message);
+            // Cleanup temporary end screen
+            if (fs.existsSync(endScreenPath)) {
+              fs.unlinkSync(endScreenPath);
+            }
+            reject(new FFmpegError(`End screen concatenation failed: ${error.message}`));
+          })
+          .run();
+      } catch (error: any) {
+        reject(new FFmpegError(`End screen creation failed: ${error.message}`));
+      }
     });
   }
 
