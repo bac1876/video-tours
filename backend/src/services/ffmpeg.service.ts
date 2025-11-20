@@ -203,18 +203,32 @@ export class FFmpegService {
       console.log(`Output: ${outputPath}`);
 
       // Escape special characters for FFmpeg drawtext
-      const escapedAddress = address.replace(/:/g, '\\:').replace(/'/g, "\\'");
-      const escapedPrice = price.replace(/:/g, '\\:').replace(/'/g, "\\'");
+      // FFmpeg drawtext requires: \ for backslash, : for colon, ' can be removed
+      const escapedAddress = address
+        .replace(/\\/g, '\\\\\\\\')  // Escape backslashes
+        .replace(/:/g, '\\:')          // Escape colons
+        .replace(/'/g, '')             // Remove single quotes
+        .replace(/"/g, '\\"');         // Escape double quotes
+
+      const escapedPrice = price
+        .replace(/\\/g, '\\\\\\\\')
+        .replace(/:/g, '\\:')
+        .replace(/'/g, '')
+        .replace(/"/g, '\\"');
+
+      const filterComplex =
+        `drawtext=text='${escapedAddress}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3:enable='lt(t\\,${duration})',` +
+        `drawtext=text='${escapedPrice}':fontsize=80:fontcolor=white:x=(w-text_w)/2:y=h/2:enable='lt(t\\,${duration})',` +
+        'format=yuv420p';
+
+      console.log('Filter complex:', filterComplex);
 
       ffmpeg(inputPath)
         .outputOptions([
           '-c:v libx264',
           '-preset slow',
           `-crf ${VIDEO_QUALITY}`,
-          '-vf',
-          `drawtext=text='${escapedAddress}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3:enable='lt(t,${duration})',` +
-          `drawtext=text='${escapedPrice}':fontsize=80:fontcolor=white:x=(w-text_w)/2:y=h/2:enable='lt(t,${duration})',` +
-          'format=yuv420p',
+          '-vf', filterComplex,
           '-an', // No audio
         ])
         .output(outputPath)
@@ -269,9 +283,31 @@ export class FFmpegService {
         const inputDuration = await this.getVideoDuration(inputPath);
 
         // Escape special characters for FFmpeg drawtext
-        const escapedName = agentName.replace(/:/g, '\\:').replace(/'/g, "\\'");
-        const escapedCompany = agentCompany.replace(/:/g, '\\:').replace(/'/g, "\\'");
-        const escapedPhone = agentPhone.replace(/:/g, '\\:').replace(/'/g, "\\'");
+        const escapedName = agentName
+          .replace(/\\/g, '\\\\\\\\')
+          .replace(/:/g, '\\:')
+          .replace(/'/g, '')
+          .replace(/"/g, '\\"');
+
+        const escapedCompany = agentCompany
+          .replace(/\\/g, '\\\\\\\\')
+          .replace(/:/g, '\\:')
+          .replace(/'/g, '')
+          .replace(/"/g, '\\"');
+
+        const escapedPhone = agentPhone
+          .replace(/\\/g, '\\\\\\\\')
+          .replace(/:/g, '\\:')
+          .replace(/'/g, '')
+          .replace(/"/g, '\\"');
+
+        const endScreenFilter =
+          `drawtext=text='${escapedName}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
+          `drawtext=text='${escapedCompany}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
+          `drawtext=text='${escapedPhone}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
+          'format=yuv420p';
+
+        console.log('End screen filter:', endScreenFilter);
 
         // First, create black end screen with text
         await new Promise<void>((resolveEndScreen, rejectEndScreen) => {
@@ -282,11 +318,7 @@ export class FFmpegService {
               '-c:v libx264',
               '-preset slow',
               `-crf ${VIDEO_QUALITY}`,
-              '-vf',
-              `drawtext=text='${escapedName}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
-              `drawtext=text='${escapedCompany}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
-              `drawtext=text='${escapedPhone}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
-              'format=yuv420p',
+              '-vf', endScreenFilter,
               '-an', // No audio
             ])
             .output(endScreenPath)
