@@ -107,26 +107,25 @@ router.post(
     );
     const clipPaths = await Promise.all(downloadPromises);
 
-    // Add text overlay to first clip
-    console.log('Adding property info overlay to first clip...');
-    const firstClipWithText = await ffmpegService.addTextOverlay(
-      clipPaths[0],
-      propertyInfo.address,
-      propertyInfo.price,
-      3
-    );
-    clipPaths[0] = firstClipWithText;
-
     console.log('Creating horizontal version (1080p)...');
     const concatenatedPath = await ffmpegService.concatenateVideos(
       clipPaths,
       `tour-${Date.now()}.mp4`
     );
 
+    // Add text overlay to beginning of concatenated video
+    console.log('Adding property info overlay to beginning...');
+    const videoWithText = await ffmpegService.addTextOverlay(
+      concatenatedPath,
+      propertyInfo.address,
+      propertyInfo.price,
+      3
+    );
+
     // Add end screen with agent info
     console.log('Adding agent info end screen...');
     const horizontalPath = await ffmpegService.addEndScreen(
-      concatenatedPath,
+      videoWithText,
       propertyInfo.agentName,
       propertyInfo.agentCompany,
       propertyInfo.agentPhone,
@@ -150,9 +149,10 @@ router.post(
       storageService.uploadFile(verticalPath, `videos/tours/final_tour_vertical_${Date.now()}.mp4`, 'video/mp4'),
     ]);
 
+    // Note: concatenatedPath and videoWithText are automatically cleaned up
+    // by addTextOverlay and addEndScreen methods
     ffmpegService.cleanupFiles([
       ...clipPaths,
-      concatenatedPath,
       horizontalPath,
       compressedPath,
       verticalPath,
