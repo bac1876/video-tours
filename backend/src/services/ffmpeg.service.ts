@@ -176,9 +176,12 @@ export class FFmpegService {
     duration: number = 3
   ): Promise<string> {
     return new Promise((resolve, reject) => {
-      const outputPath = inputPath.replace('.mp4', '_with_text.mp4');
+      const outputFilename = `text-overlay-${uuidv4()}.mp4`;
+      const outputPath = path.join(this.uploadsDir, outputFilename);
 
       console.log(`Adding text overlay (${duration}s): ${address}, ${price}`);
+      console.log(`Input: ${inputPath}`);
+      console.log(`Output: ${outputPath}`);
 
       // Escape special characters for FFmpeg drawtext
       const escapedAddress = address.replace(/:/g, '\\:').replace(/'/g, "\\'");
@@ -204,6 +207,15 @@ export class FFmpegService {
         })
         .on('end', () => {
           console.log(`Text overlay complete: ${outputPath}`);
+          // Clean up the input file
+          try {
+            if (fs.existsSync(inputPath)) {
+              fs.unlinkSync(inputPath);
+              console.log(`Cleaned up input file: ${inputPath}`);
+            }
+          } catch (cleanupError: any) {
+            console.warn(`Failed to cleanup input file: ${cleanupError.message}`);
+          }
           resolve(outputPath);
         })
         .on('error', (error) => {
@@ -224,10 +236,13 @@ export class FFmpegService {
   ): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
-        const outputPath = inputPath.replace('.mp4', '_with_end.mp4');
-        const endScreenPath = path.join(this.uploadsDir, `end-${uuidv4()}.mp4`);
+        const outputFilename = `end-screen-${uuidv4()}.mp4`;
+        const outputPath = path.join(this.uploadsDir, outputFilename);
+        const endScreenPath = path.join(this.uploadsDir, `end-temp-${uuidv4()}.mp4`);
 
         console.log(`Creating end screen with agent info (${duration}s display, ${fadeDuration}s fade)`);
+        console.log(`Input: ${inputPath}`);
+        console.log(`Output: ${outputPath}`);
 
         // Get input video duration for fade offset
         const inputDuration = await this.getVideoDuration(inputPath);
@@ -294,17 +309,30 @@ export class FFmpegService {
           })
           .on('end', () => {
             console.log(`End screen added with fade: ${outputPath}`);
-            // Cleanup temporary end screen
-            if (fs.existsSync(endScreenPath)) {
-              fs.unlinkSync(endScreenPath);
+            // Cleanup temporary files
+            try {
+              if (fs.existsSync(endScreenPath)) {
+                fs.unlinkSync(endScreenPath);
+                console.log(`Cleaned up temp end screen: ${endScreenPath}`);
+              }
+              if (fs.existsSync(inputPath)) {
+                fs.unlinkSync(inputPath);
+                console.log(`Cleaned up input file: ${inputPath}`);
+              }
+            } catch (cleanupError: any) {
+              console.warn(`Failed to cleanup temp files: ${cleanupError.message}`);
             }
             resolve(outputPath);
           })
           .on('error', (error) => {
             console.error('FFmpeg concatenation error:', error.message);
-            // Cleanup temporary end screen
-            if (fs.existsSync(endScreenPath)) {
-              fs.unlinkSync(endScreenPath);
+            // Cleanup temporary end screen on error
+            try {
+              if (fs.existsSync(endScreenPath)) {
+                fs.unlinkSync(endScreenPath);
+              }
+            } catch (cleanupError: any) {
+              console.warn(`Failed to cleanup on error: ${cleanupError.message}`);
             }
             reject(new FFmpegError(`End screen concatenation failed: ${error.message}`));
           })
