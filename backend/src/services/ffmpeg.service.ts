@@ -264,11 +264,11 @@ export class FFmpegService {
       const escapedCityStateZip = escapeText(cityStateZip);
       const escapedPrice = escapeText(price);
 
-      // Calculate absolute positions (moved up 10% and smaller box)
-      const boxY = videoHeight - 183;
-      const textY1 = videoHeight - 175;
-      const textY2 = videoHeight - 157;
-      const textY3 = videoHeight - 139;
+      // Calculate absolute positions (compact box at bottom)
+      const boxY = videoHeight - 75;
+      const textY1 = videoHeight - 67;
+      const textY2 = videoHeight - 50;
+      const textY3 = videoHeight - 33;
 
       // Compact box with 3 lines of text
       // Line 1: Street address (12px)
