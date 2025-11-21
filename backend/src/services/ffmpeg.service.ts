@@ -219,14 +219,15 @@ export class FFmpegService {
       const escapedCityStateZip = escapeText(cityStateZip);
       const escapedPrice = escapeText(price);
 
-      // Small fonts, stacked in bottom-left corner with single background box
-      // Line 1: Street (18px, bold feel)
-      // Line 2: City, State ZIP (14px)
-      // Line 3: Price (16px)
+      // Unified box with 3 lines of text (20% smaller fonts)
+      // Line 1: Street address (14px)
+      // Line 2: City, State ZIP (11px)
+      // Line 3: Price (13px)
       const filterComplex =
-        `drawtext=text='${escapedStreet}':fontsize=18:fontcolor=white:x=15:y=h-95:box=1:boxcolor=black@0.7:boxborderw=8:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedCityStateZip}':fontsize=14:fontcolor=white:x=15:y=h-70:box=1:boxcolor=black@0.7:boxborderw=8:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedPrice}':fontsize=16:fontcolor=white:x=15:y=h-48:box=1:boxcolor=black@0.7:boxborderw=8:enable='lt(t,${duration})',` +
+        `drawbox=x=10:y=h-90:w=280:h=75:color=black@0.7:t=fill:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedStreet}':fontsize=14:fontcolor=white:x=18:y=h-82:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=h-62:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedPrice}':fontsize=13:fontcolor=white:x=18:y=h-42:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);
