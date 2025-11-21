@@ -217,8 +217,8 @@ export class FFmpegService {
         .replace(/"/g, '\\"');
 
       const filterComplex =
-        `drawtext=text='${escapedAddress}':fontsize=24:fontcolor=white:x=w-text_w-20:y=h-80:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedPrice}':fontsize=32:fontcolor=white:x=w-text_w-20:y=h-40:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedAddress}':fontsize=28:fontcolor=white:x=20:y=h-90:box=1:boxcolor=black@0.6:boxborderw=15:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedPrice}':fontsize=22:fontcolor=white:x=20:y=h-45:box=1:boxcolor=black@0.6:boxborderw=15:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);
