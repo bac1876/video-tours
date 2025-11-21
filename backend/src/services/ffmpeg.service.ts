@@ -221,11 +221,37 @@ export class FFmpegService {
         console.warn('Probe error, using default height');
       }
 
-      // Split address into street and city/state/zip
-      // Expected format: "123 Main Street, City, State ZIP"
-      const addressParts = address.split(',');
-      const streetAddress = addressParts[0]?.trim() || address;
-      const cityStateZip = addressParts.slice(1).join(',').trim() || '';
+      // Parse address into street and city/state/zip
+      // Expected formats: "123 Main ST Rogers, AR 72758" or "123 Main Street, City, State ZIP"
+      let streetAddress = address;
+      let cityStateZip = '';
+
+      // Try to find state pattern (comma followed by 2 letter state code)
+      const stateMatch = address.match(/,\s*([A-Z]{2})\s+\d{5}/);
+      if (stateMatch) {
+        // Found state, split there
+        const parts = address.split(',');
+        const beforeComma = parts[0]?.trim() || '';
+        const afterComma = parts.slice(1).join(',').trim();
+
+        // Extract city from end of first part (last word)
+        const beforeWords = beforeComma.split(/\s+/);
+        if (beforeWords.length > 3) {
+          // Assume last word is city, rest is street
+          const city = beforeWords[beforeWords.length - 1];
+          streetAddress = beforeWords.slice(0, -1).join(' ');
+          cityStateZip = `${city}, ${afterComma}`;
+        } else {
+          // Short address, keep as is
+          streetAddress = beforeComma;
+          cityStateZip = afterComma;
+        }
+      } else {
+        // Fallback: split on first comma
+        const parts = address.split(',');
+        streetAddress = parts[0]?.trim() || address;
+        cityStateZip = parts.slice(1).join(',').trim();
+      }
 
       // Escape function for FFmpeg drawtext
       const escapeText = (text: string) => text
@@ -239,18 +265,21 @@ export class FFmpegService {
       const escapedPrice = escapeText(price);
 
       // Calculate absolute positions
-      const boxY = videoHeight - 90;
+      const boxY = videoHeight - 75;
+      const textY1 = videoHeight - 68;
+      const textY2 = videoHeight - 50;
+      const textY3 = videoHeight - 32;
 
-      // Unified box with 3 lines of text (20% smaller fonts)
-      // Line 1: Street address (14px)
+      // Smaller box with 3 lines of text
+      // Line 1: Street address (13px)
       // Line 2: City, State ZIP (11px)
-      // Line 3: Price (13px)
+      // Line 3: Price (12px)
       const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
       const filterComplex =
-        `drawbox=x=10:y=${boxY}:w=280:h=75:color=red:t=fill:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=14:fontcolor=white:x=18:y=h-82:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=h-62:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=13:fontcolor=white:x=18:y=h-42:enable='lt(t,${duration})',` +
+        `drawbox=x=10:y=${boxY}:w=240:h=65:color=black:t=fill:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=13:fontcolor=white:x=18:y=${textY1}:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=${textY2}:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=12:fontcolor=white:x=18:y=${textY3}:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);
