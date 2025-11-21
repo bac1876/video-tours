@@ -37,8 +37,7 @@ export class PromptService {
       prompt += `Camera gently moves forward, getting slightly closer to showcase the property. `;
       prompt += `Smooth, slow dolly forward taking the full ${VIDEO_DURATION} seconds. `;
       prompt += `Maintain stable, professional real estate video feel. `;
-      prompt += `STATIC SCENE: Trees, plants, grass, and all objects must remain completely still. `;
-      prompt += `No wind, no movement of foliage, no swaying branches. `;
+      prompt += `Trees, plants, grass, and foliage remain still - no wind effect. `;
     } else if (isSmallRoom) {
       // SMALL ROOM (bedroom, bathroom): Rotation only, no zoom
       prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
@@ -48,19 +47,19 @@ export class PromptService {
       prompt += `CRITICAL: Do NOT zoom in or out. Do NOT move the camera forward or backward. `;
       prompt += `The camera position stays fixed - ONLY the viewing angle changes. `;
       prompt += `No dolly, no push-in, no zoom - only rotation in place. `;
-      prompt += `STATIC SCENE: Curtains, furniture, and all objects must remain completely still. `;
+      prompt += `Curtains and fabrics remain still, but if ceiling fans are visible they can spin slowly. `;
+      prompt += `Lights can subtly brighten as the camera rotates, as if the space is coming to life. `;
     } else {
       // LARGE INTERIOR ROOM: Slow movement/zoom is OK
       prompt += `Smooth camera movement through the space. `;
       prompt += `Camera can gently move forward or pan across the room to showcase the space. `;
       prompt += `Slow, cinematic movement taking the full ${VIDEO_DURATION} seconds. `;
       prompt += `Professional real estate walkthrough feel. `;
-      prompt += `STATIC SCENE: Curtains, furniture, and all objects must remain completely still. `;
+      prompt += `Curtains and fabrics remain still, but if ceiling fans are visible they can spin slowly. `;
+      prompt += `Lights can subtly brighten as the camera enters, as if the space is coming to life. `;
     }
 
     // Common constraints
-    prompt += `ONLY the camera moves - nothing else. `;
-    prompt += `All objects, fabrics, and elements are frozen in place. `;
     prompt += `Stop before revealing any area not visible in the input image. `;
     prompt += `Only show areas actually captured in the source photo. `;
     prompt += `Do NOT create or imagine any elements not in the input image. `;
