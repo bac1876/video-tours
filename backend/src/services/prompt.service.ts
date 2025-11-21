@@ -16,27 +16,28 @@ const startPositions = [
 
 export class PromptService {
   generateRoomPrompt(_roomIndex?: number, roomDescription?: string): string {
-    // Simplified prompt using standard cinematography terms
     let prompt = '';
 
     if (roomDescription) {
-      // Use room description to create explicit spatial anchors
       prompt += `This room contains: ${roomDescription}. `;
       prompt += `Keep all these objects in their exact positions. `;
     }
 
-    // Camera movement with 150-degree rotation
-    prompt += `Slow horizontal camera pan from left to right covering 150 degrees. `;
-    prompt += `Camera stays in one fixed spot at eye level. `;
-    prompt += `Very slow smooth pan taking the full ${VIDEO_DURATION} seconds. `;
-    prompt += `Do not zoom in or out. `;
+    // First-person "standing and looking around" perspective
+    prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
+    prompt += `The camera rotates horizontally in place - like standing on a lazy susan that slowly turns. `;
+    prompt += `The viewer slowly turns their gaze from left to right across the visible room. `;
+    prompt += `Take the full ${VIDEO_DURATION} seconds for this slow, smooth rotation. `;
 
-    // CRITICAL: Stop before unseen areas
-    prompt += `CRITICAL - Stop camera movement before revealing any wall or area not visible in the input image. `;
-    prompt += `Only pan across areas that are actually shown in the source photo. `;
-    prompt += `If 150 degrees would show unseen areas, STOP the pan earlier. `;
-    prompt += `Do NOT create, synthesize, or imagine any walls, doors, windows, or furniture not in the input image. `;
-    prompt += `The input photo is the ONLY source - do not add anything beyond what's captured there. `;
+    // CRITICAL: No zooming or forward movement
+    prompt += `CRITICAL: Do NOT zoom in or out. Do NOT move the camera forward or backward. `;
+    prompt += `The camera position stays fixed - ONLY the viewing angle changes. `;
+    prompt += `No dolly, no push-in, no zoom - only rotation in place. `;
+
+    // Stop before unseen areas
+    prompt += `Stop rotation before revealing any wall or area not visible in the input image. `;
+    prompt += `Only rotate across areas actually shown in the source photo. `;
+    prompt += `Do NOT create or imagine any elements not in the input image. `;
 
     prompt += `Maintain exact object positions and lighting from the input image.`;
 
