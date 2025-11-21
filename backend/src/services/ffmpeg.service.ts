@@ -292,29 +292,22 @@ export class FFmpegService {
         // Get input video duration for fade offset
         const inputDuration = await this.getVideoDuration(inputPath);
 
-        // Escape special characters for FFmpeg drawtext
-        const escapedName = agentName
+        // Escape function for FFmpeg drawtext
+        const escapeText = (text: string) => text
           .replace(/\\/g, '\\\\\\\\')
           .replace(/:/g, '\\:')
           .replace(/'/g, '')
           .replace(/"/g, '\\"');
 
-        const escapedCompany = agentCompany
-          .replace(/\\/g, '\\\\\\\\')
-          .replace(/:/g, '\\:')
-          .replace(/'/g, '')
-          .replace(/"/g, '\\"');
+        const escapedName = escapeText(agentName);
+        const escapedCompany = escapeText(agentCompany);
+        const escapedPhone = escapeText(agentPhone);
 
-        const escapedPhone = agentPhone
-          .replace(/\\/g, '\\\\\\\\')
-          .replace(/:/g, '\\:')
-          .replace(/'/g, '')
-          .replace(/"/g, '\\"');
-
+        const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
         const endScreenFilter =
-          `drawtext=text='${escapedName}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
-          `drawtext=text='${escapedCompany}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
-          `drawtext=text='${escapedPhone}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
+          `drawtext=fontfile=${fontFile}:text='${escapedName}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
+          `drawtext=fontfile=${fontFile}:text='${escapedCompany}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
+          `drawtext=fontfile=${fontFile}:text='${escapedPhone}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
           'format=yuv420p';
 
         console.log('End screen filter:', endScreenFilter);
