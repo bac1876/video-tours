@@ -225,7 +225,7 @@ export class FFmpegService {
       // Line 3: Price (13px)
       const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
       const filterComplex =
-        `drawbox=x=10:y=h-90:w=280:h=75:color=red:t=fill:enable='lt(t,${duration})',` +
+        `drawbox=x=10:y=(ih-90):w=280:h=75:color=red:t=fill:enable='lt(t,${duration})',` +
         `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=14:fontcolor=white:x=18:y=h-82:enable='lt(t,${duration})',` +
         `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=h-62:enable='lt(t,${duration})',` +
         `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=13:fontcolor=white:x=18:y=h-42:enable='lt(t,${duration})',` +
