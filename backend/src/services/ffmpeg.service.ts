@@ -202,23 +202,31 @@ export class FFmpegService {
       console.log(`Input: ${inputPath}`);
       console.log(`Output: ${outputPath}`);
 
-      // Escape special characters for FFmpeg drawtext
-      // FFmpeg drawtext requires: \ for backslash, : for colon, ' can be removed
-      const escapedAddress = address
-        .replace(/\\/g, '\\\\\\\\')  // Escape backslashes
-        .replace(/:/g, '\\:')          // Escape colons
-        .replace(/'/g, '')             // Remove single quotes
-        .replace(/"/g, '\\"');         // Escape double quotes
+      // Split address into street and city/state/zip
+      // Expected format: "123 Main Street, City, State ZIP"
+      const addressParts = address.split(',');
+      const streetAddress = addressParts[0]?.trim() || address;
+      const cityStateZip = addressParts.slice(1).join(',').trim() || '';
 
-      const escapedPrice = price
+      // Escape function for FFmpeg drawtext
+      const escapeText = (text: string) => text
         .replace(/\\/g, '\\\\\\\\')
         .replace(/:/g, '\\:')
         .replace(/'/g, '')
         .replace(/"/g, '\\"');
 
+      const escapedStreet = escapeText(streetAddress);
+      const escapedCityStateZip = escapeText(cityStateZip);
+      const escapedPrice = escapeText(price);
+
+      // Small fonts, stacked in bottom-left corner with single background box
+      // Line 1: Street (18px, bold feel)
+      // Line 2: City, State ZIP (14px)
+      // Line 3: Price (16px)
       const filterComplex =
-        `drawtext=text='${escapedAddress}':fontsize=28:fontcolor=white:x=20:y=h-90:box=1:boxcolor=black@0.6:boxborderw=15:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedPrice}':fontsize=22:fontcolor=white:x=20:y=h-45:box=1:boxcolor=black@0.6:boxborderw=15:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedStreet}':fontsize=18:fontcolor=white:x=15:y=h-95:box=1:boxcolor=black@0.7:boxborderw=8:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedCityStateZip}':fontsize=14:fontcolor=white:x=15:y=h-70:box=1:boxcolor=black@0.7:boxborderw=8:enable='lt(t,${duration})',` +
+        `drawtext=text='${escapedPrice}':fontsize=16:fontcolor=white:x=15:y=h-48:box=1:boxcolor=black@0.7:boxborderw=8:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);

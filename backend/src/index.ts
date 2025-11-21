@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'Home Video Tours API',
-    version: '1.2.1',
+    version: '1.2.2',
     endpoints: {
       health: '/api/health',
       upload: 'POST /api/upload',
