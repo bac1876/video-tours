@@ -223,11 +223,12 @@ export class FFmpegService {
       // Line 1: Street address (14px)
       // Line 2: City, State ZIP (11px)
       // Line 3: Price (13px)
+      const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
       const filterComplex =
         `drawbox=x=10:y=h-90:w=280:h=75:color=black:t=fill:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedStreet}':fontsize=14:fontcolor=white:x=18:y=h-82:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=h-62:enable='lt(t,${duration})',` +
-        `drawtext=text='${escapedPrice}':fontsize=13:fontcolor=white:x=18:y=h-42:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=14:fontcolor=white:x=18:y=h-82:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=h-62:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=13:fontcolor=white:x=18:y=h-42:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);
