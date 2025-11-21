@@ -20,6 +20,14 @@ export default function Home() {
   const { generateAllVideos, generateFullTour, isGenerating, error: generateError, progress } = useGenerateVideos();
 
   const handleUploadComplete = async (uploadedPhotos: Photo[], uploadedPropertyInfo: PropertyInfo) => {
+    // If photos already have URLs (coming back from reorder), skip upload
+    if (uploadedPhotos[0]?.url && !uploadedPhotos[0].url.startsWith('blob:')) {
+      setPhotos(uploadedPhotos);
+      setPropertyInfo(uploadedPropertyInfo);
+      setStep('reorder');
+      return;
+    }
+
     const photosWithFiles = uploadedPhotos.map((photo) => ({
       ...photo,
       file: photo.file!,
@@ -102,6 +110,8 @@ export default function Home() {
         <Upload
           onUploadComplete={handleUploadComplete}
           isUploading={isUploading}
+          initialPhotos={photos}
+          initialPropertyInfo={propertyInfo || undefined}
         />
       )}
 

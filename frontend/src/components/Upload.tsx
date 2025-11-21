@@ -7,17 +7,24 @@ import { Photo, PropertyInfo } from '../types';
 interface UploadProps {
   onUploadComplete: (photos: Photo[], propertyInfo: PropertyInfo) => void;
   isUploading: boolean;
+  initialPhotos?: Photo[];
+  initialPropertyInfo?: PropertyInfo;
 }
 
 const MAX_FILES = 15;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-export default function Upload({ onUploadComplete, isUploading }: UploadProps) {
-  const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
-  const [descriptions, setDescriptions] = useState<string[]>([]);
+export default function Upload({
+  onUploadComplete,
+  isUploading,
+  initialPhotos,
+  initialPropertyInfo
+}: UploadProps) {
+  const [files, setFiles] = useState<File[]>(initialPhotos?.map(p => p.file).filter(Boolean) as File[] || []);
+  const [previews, setPreviews] = useState<string[]>(initialPhotos?.map(p => p.url) || []);
+  const [descriptions, setDescriptions] = useState<string[]>(initialPhotos?.map(p => p.description || '') || []);
   const [error, setError] = useState<string | null>(null);
-  const [propertyInfo, setPropertyInfo] = useState<PropertyInfo>({
+  const [propertyInfo, setPropertyInfo] = useState<PropertyInfo>(initialPropertyInfo || {
     address: '',
     price: '',
     agentName: '',
