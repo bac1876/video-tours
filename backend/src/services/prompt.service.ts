@@ -47,14 +47,16 @@ export class PromptService {
       prompt += `CRITICAL: Do NOT zoom in or out. Do NOT move the camera forward or backward. `;
       prompt += `The camera position stays fixed - ONLY the viewing angle changes. `;
       prompt += `No dolly, no push-in, no zoom - only rotation in place. `;
-      prompt += `If ceiling fans are visible they can spin slowly. `;
+      prompt += `If ceiling fans are visible, only the fan blades themselves can spin slowly - no wind effect. `;
+      prompt += `Towels, curtains, and all fabrics remain completely still with no air movement. `;
     } else {
       // LARGE INTERIOR ROOM: Slow movement/zoom is OK
       prompt += `Smooth camera movement through the space. `;
       prompt += `Camera can gently move forward or pan across the room to showcase the space. `;
       prompt += `Slow, cinematic movement taking the full ${VIDEO_DURATION} seconds. `;
       prompt += `Professional real estate walkthrough feel. `;
-      prompt += `If ceiling fans are visible they can spin slowly. `;
+      prompt += `If ceiling fans are visible, only the fan blades themselves can spin slowly - no wind effect. `;
+      prompt += `Towels, curtains, and all fabrics remain completely still with no air movement. `;
     }
 
     // Common constraints - CRITICAL: No hallucinations
