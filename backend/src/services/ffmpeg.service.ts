@@ -188,7 +188,7 @@ export class FFmpegService {
     price: string,
     duration: number = 3
   ): Promise<string> {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       try {
         this.ensureUploadsDir();
       } catch (error: any) {
@@ -201,6 +201,25 @@ export class FFmpegService {
       console.log(`Adding text overlay (${duration}s): ${address}, ${price}`);
       console.log(`Input: ${inputPath}`);
       console.log(`Output: ${outputPath}`);
+
+      // Get video dimensions to calculate absolute position
+      let videoHeight = 1080; // Default
+      try {
+        await new Promise<void>((resolveProbe, rejectProbe) => {
+          ffmpeg.ffprobe(inputPath, (err, metadata) => {
+            if (err) {
+              console.warn('Failed to probe video, using default height:', err.message);
+              resolveProbe();
+            } else {
+              videoHeight = metadata.streams[0]?.height || 1080;
+              console.log(`Video height: ${videoHeight}`);
+              resolveProbe();
+            }
+          });
+        });
+      } catch (probeError) {
+        console.warn('Probe error, using default height');
+      }
 
       // Split address into street and city/state/zip
       // Expected format: "123 Main Street, City, State ZIP"
@@ -219,13 +238,16 @@ export class FFmpegService {
       const escapedCityStateZip = escapeText(cityStateZip);
       const escapedPrice = escapeText(price);
 
+      // Calculate absolute positions
+      const boxY = videoHeight - 90;
+
       // Unified box with 3 lines of text (20% smaller fonts)
       // Line 1: Street address (14px)
       // Line 2: City, State ZIP (11px)
       // Line 3: Price (13px)
       const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
       const filterComplex =
-        `drawbox=x=10:y=(ih-90):w=280:h=75:color=red:t=fill:enable='lt(t,${duration})',` +
+        `drawbox=x=10:y=${boxY}:w=280:h=75:color=red:t=fill:enable='lt(t,${duration})',` +
         `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=14:fontcolor=white:x=18:y=h-82:enable='lt(t,${duration})',` +
         `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=h-62:enable='lt(t,${duration})',` +
         `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=13:fontcolor=white:x=18:y=h-42:enable='lt(t,${duration})',` +
