@@ -49,7 +49,20 @@
       "Bash(claude mcp add mcp-hot-reload npx -y '@neilopet/mcp-server-hmr')",
       "Bash(claude mcp:*)",
       "Bash(vercel --version:*)",
-      "Bash(vercel whoami:*)"
+      "Bash(vercel whoami:*)",
+      "Bash(vercel --prod:*)",
+      "Bash(node railway-login.js:*)",
+      "Bash(start cmd /c \"railway login && echo Login complete! && pause\")",
+      "Bash(railway up --help:*)",
+      "WebFetch(domain:railway.com)",
+      "Bash(node deploy-railway.js:*)",
+      "WebFetch(domain:docs.railway.com)",
+      "Bash(vercel ls:*)",
+      "Bash(vercel env:*)",
+      "WebFetch(domain:docs.kie.ai)",
+      "Bash(railway status:*)",
+      "WebFetch(domain:gitlab.alpinelinux.org)",
+      "Bash(the argument list: Option not found\"\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

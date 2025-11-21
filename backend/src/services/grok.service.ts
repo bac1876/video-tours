@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SoraAPIError } from '../utils/errors';
+import { GrokAPIError } from '../utils/errors';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -41,7 +41,7 @@ interface KieResultJson {
   videoUrl?: string;
 }
 
-export class SoraService {
+export class GrokService {
   private apiKey: string;
   private apiUrl: string;
 
@@ -60,7 +60,7 @@ export class SoraService {
     retryCount = 0
   ): Promise<string> {
     try {
-      console.log(`Generating video with KIE Sora API (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+      console.log(`Generating video with Grok API (attempt ${retryCount + 1}/${MAX_RETRIES})`);
       console.log(`Image URL: ${imageUrl}`);
       console.log(`Prompt: ${prompt}`);
 
@@ -74,7 +74,7 @@ export class SoraService {
 
       return videoUrl;
     } catch (error: any) {
-      console.error(`KIE Sora API error (attempt ${retryCount + 1}):`, error.message);
+      console.error(`Grok API error (attempt ${retryCount + 1}):`, error.message);
 
       if (retryCount < MAX_RETRIES - 1) {
         console.log(`Retrying in ${RETRY_DELAY / 1000} seconds...`);
@@ -82,7 +82,7 @@ export class SoraService {
         return this.generateVideo(imageUrl, prompt, retryCount + 1);
       }
 
-      throw new SoraAPIError(
+      throw new GrokAPIError(
         `Failed to generate video after ${MAX_RETRIES} attempts: ${error.message}`
       );
     }
@@ -120,7 +120,7 @@ export class SoraService {
       console.log('Data:', JSON.stringify(response.data, null, 2));
 
       if (response.data.code !== 200) {
-        throw new SoraAPIError(`Failed to create task: ${response.data.message}`);
+        throw new GrokAPIError(`Failed to create task: ${response.data.message}`);
       }
 
       return response.data.data.taskId;
@@ -130,13 +130,13 @@ export class SoraService {
         console.error('Status Code:', error.response.status);
         console.error('Response Data:', JSON.stringify(error.response.data, null, 2));
         console.error('Response Headers:', JSON.stringify(error.response.headers, null, 2));
-        throw new SoraAPIError(
+        throw new GrokAPIError(
           `KIE API error (${error.response.status}): ${JSON.stringify(error.response.data)}`
         );
       }
       console.error('Error Details:', error.message);
       console.error('Full Error:', JSON.stringify(error, null, 2));
-      throw new SoraAPIError(`Failed to create task: ${error.message}`);
+      throw new GrokAPIError(`Failed to create task: ${error.message}`);
     }
   }
 
@@ -156,7 +156,7 @@ export class SoraService {
         );
 
         if (response.data.code !== 200) {
-          throw new SoraAPIError(`Failed to check status: ${response.data.message}`);
+          throw new GrokAPIError(`Failed to check status: ${response.data.message}`);
         }
 
         const state = response.data.data.state;
@@ -165,7 +165,7 @@ export class SoraService {
         if (state === 'success') {
           // Parse the resultJson to get video URL
           if (!response.data.data.resultJson) {
-            throw new SoraAPIError('No result JSON in successful response');
+            throw new GrokAPIError('No result JSON in successful response');
           }
 
           const resultJson: KieResultJson = JSON.parse(response.data.data.resultJson);
@@ -174,7 +174,7 @@ export class SoraService {
           const videoUrl = resultJson.videoUrl || resultJson.resultUrls?.[0];
 
           if (!videoUrl) {
-            throw new SoraAPIError('No video URL in result');
+            throw new GrokAPIError('No video URL in result');
           }
 
           return videoUrl;
@@ -182,14 +182,14 @@ export class SoraService {
 
         if (state === 'fail') {
           const errorMsg = response.data.data.failMsg || 'Unknown error';
-          throw new SoraAPIError(`Video generation failed: ${errorMsg}`);
+          throw new GrokAPIError(`Video generation failed: ${errorMsg}`);
         }
 
         // States: queuing, processing, generating - keep polling
         console.log(`Video generation in progress (${state})... polling again in ${POLLING_INTERVAL / 1000}s`);
         await this.sleep(POLLING_INTERVAL);
       } catch (error: any) {
-        if (error instanceof SoraAPIError) {
+        if (error instanceof GrokAPIError) {
           throw error;
         }
         console.error('Error polling for video:', error.message);
@@ -197,7 +197,7 @@ export class SoraService {
       }
     }
 
-    throw new SoraAPIError('Video generation timed out after 5 minutes');
+    throw new GrokAPIError('Video generation timed out after 5 minutes');
   }
 
   async downloadVideo(videoUrl: string, outputPath: string): Promise<string> {
@@ -219,11 +219,11 @@ export class SoraService {
           resolve(outputPath);
         });
         writer.on('error', (error) => {
-          reject(new SoraAPIError(`Failed to download video: ${error.message}`));
+          reject(new GrokAPIError(`Failed to download video: ${error.message}`));
         });
       });
     } catch (error: any) {
-      throw new SoraAPIError(`Failed to download video: ${error.message}`);
+      throw new GrokAPIError(`Failed to download video: ${error.message}`);
     }
   }
 
@@ -243,9 +243,9 @@ export class SoraService {
 
   // Helper method to get cost estimate
   getCostEstimate(durationSeconds: number = VIDEO_DURATION): number {
-    // Using standard Sora 2 pricing: $0.015/second
+    // Using Grok pricing
     return durationSeconds * 0.015;
   }
 }
 
-export const soraService = new SoraService();
+export const grokService = new GrokService();

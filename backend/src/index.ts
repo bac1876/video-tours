@@ -44,8 +44,8 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: 'Sora Home Walkthrough Generator API',
-    version: '1.2.0',
+    message: 'Home Video Tours API',
+    version: '1.2.1',
     endpoints: {
       health: '/api/health',
       upload: 'POST /api/upload',
@@ -61,7 +61,7 @@ app.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║   Sora Home Walkthrough Generator API v1.1               ║
+║   Home Video Tours API v1.2.1                            ║
 ║                                                           ║
 ║   Server running on: http://localhost:${PORT}              ║
 ║   Environment: ${process.env.NODE_ENV || 'development'}                                   ║

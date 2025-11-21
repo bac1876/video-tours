@@ -5,7 +5,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Sora Home Walkthrough Generator',
+  title: 'Home Video Tours',
   description: 'Transform home photos into cinematic walkthrough videos with AI',
 };
 
@@ -39,7 +39,7 @@ export default function RootLayout({
                   </div>
                   <div>
                     <h1 className="text-lg font-bold text-gray-900 dark:text-white">
-                      Sora Walkthrough
+                      Home Video Tours
                     </h1>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
                       AI Video Generator
@@ -48,7 +48,7 @@ export default function RootLayout({
                 </div>
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Powered by Sora AI
+                    Powered by Grok AI
                   </span>
                 </div>
               </div>
@@ -60,7 +60,7 @@ export default function RootLayout({
           <footer className="border-t border-gray-200 dark:border-gray-700 mt-20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
               <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                <p>&copy; 2025 Sora Home Walkthrough Generator. All rights reserved.</p>
+                <p>&copy; 2025 Home Video Tours. All rights reserved.</p>
                 <p className="mt-2">
                   Create stunning real estate walkthroughs with AI-powered video generation
                 </p>

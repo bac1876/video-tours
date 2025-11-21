@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { soraService } from '../services/sora.service';
+import { grokService } from '../services/grok.service';
 import { storageService } from '../services/storage.service';
 import { ffmpegService } from '../services/ffmpeg.service';
 import { promptService } from '../services/prompt.service';
@@ -59,10 +59,10 @@ router.post(
 
     console.log(`Final prompt: ${finalPrompt}`);
 
-    const videoUrl = await soraService.generateVideo(imageUrl, finalPrompt);
+    const videoUrl = await grokService.generateVideo(imageUrl, finalPrompt);
 
-    const tempPath = soraService.generateTempPath('room');
-    const downloadedPath = await soraService.downloadVideo(videoUrl, tempPath);
+    const tempPath = grokService.generateTempPath('room');
+    const downloadedPath = await grokService.downloadVideo(videoUrl, tempPath);
 
     const extension = storageService.getFileExtension(downloadedPath);
     const key = storageService.generateUniqueKey('videos/clips', extension);
