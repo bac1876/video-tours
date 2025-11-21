@@ -14,6 +14,8 @@ export interface VisionAnalysis {
     position: string;
   }>;
   rawAnalysis: string;
+  isExterior: boolean;
+  isSmallRoom: boolean;
 }
 
 export class VisionService {
@@ -55,22 +57,23 @@ Be precise and use clear directional language. This analysis will be used to gen
             content: [
               {
                 type: 'text',
-                text: `Analyze this room photo and provide:
+                text: `Analyze this photo and provide:
 
-1. ROOM TYPE: What type of room is this? (e.g., "living room", "kitchen", "bedroom")
+1. EXTERIOR OR INTERIOR: Is this an EXTERIOR shot (outside of house, front yard, backyard) or INTERIOR (inside a room)? Answer: "EXTERIOR" or "INTERIOR"
 
-2. SPATIAL LAYOUT: Describe the exact positions of ALL visible objects and architectural features using precise directional language:
-   - What's on the LEFT wall?
-   - What's on the RIGHT wall?
-   - What's in the CENTER of the room?
-   - What's on the BACK wall (if visible)?
-   - What's on the FRONT/foreground?
+2. ROOM TYPE: What type of space is this? (e.g., "exterior front", "living room", "kitchen", "bedroom", "bathroom", "dining room")
 
-3. OBJECT LIST: List each major object with its exact position (format: "object - position")
+3. ROOM SIZE: Is this a SMALL space (bedroom, bathroom, closet, small office) or LARGE space (living room, kitchen, great room, exterior)? Answer: "SMALL" or "LARGE"
 
-4. KEY SPATIAL RELATIONSHIPS: Describe how objects relate to each other (e.g., "sofa faces the TV", "island is centered between the stove and refrigerator")
+4. SPATIAL LAYOUT: Describe the exact positions of ALL visible objects and architectural features using precise directional language:
+   - What's on the LEFT?
+   - What's on the RIGHT?
+   - What's in the CENTER?
+   - What's in the BACK?
 
-Be extremely specific about positions. Use terms like "left wall", "right wall", "center of room", "back corner", etc.`,
+5. OBJECT LIST: List each major object with its exact position (format: "object - position")
+
+Be extremely specific about positions.`,
               },
               {
                 type: 'image_url',
@@ -100,20 +103,32 @@ Be extremely specific about positions. Use terms like "left wall", "right wall",
   }
 
   private parseAnalysis(rawAnalysis: string): VisionAnalysis {
+    // Extract exterior/interior
+    const exteriorMatch = rawAnalysis.match(/EXTERIOR OR INTERIOR:?\s*(EXTERIOR|INTERIOR)/i);
+    const isExterior = exteriorMatch ? exteriorMatch[1].toUpperCase() === 'EXTERIOR' : false;
+
     // Extract room type
     const roomTypeMatch = rawAnalysis.match(/ROOM TYPE:?\s*(.+?)(?:\n|$)/i);
     const roomType = roomTypeMatch ? roomTypeMatch[1].trim() : 'room';
 
+    // Extract room size
+    const sizeMatch = rawAnalysis.match(/ROOM SIZE:?\s*(SMALL|LARGE)/i);
+    const isSmallRoom = sizeMatch ? sizeMatch[1].toUpperCase() === 'SMALL' : false;
+
+    // Also check room type for small room indicators
+    const smallRoomTypes = ['bedroom', 'bathroom', 'closet', 'office', 'laundry', 'powder'];
+    const isSmallByType = smallRoomTypes.some(type => roomType.toLowerCase().includes(type));
+
     // Extract spatial layout section
     const spatialMatch = rawAnalysis.match(
-      /SPATIAL LAYOUT:?\s*([\s\S]+?)(?=OBJECT LIST|KEY SPATIAL|$)/i
+      /SPATIAL LAYOUT:?\s*([\s\S]+?)(?=OBJECT LIST|$)/i
     );
     const spatialDescription = spatialMatch ? spatialMatch[1].trim() : rawAnalysis;
 
     // Extract object list
     const objects: Array<{ name: string; position: string }> = [];
     const objectListMatch = rawAnalysis.match(
-      /OBJECT LIST:?\s*([\s\S]+?)(?=KEY SPATIAL|$)/i
+      /OBJECT LIST:?\s*([\s\S]+?)$/i
     );
 
     if (objectListMatch) {
@@ -134,6 +149,8 @@ Be extremely specific about positions. Use terms like "left wall", "right wall",
       spatialDescription,
       objects,
       rawAnalysis,
+      isExterior,
+      isSmallRoom: isSmallRoom || isSmallByType,
     };
   }
 

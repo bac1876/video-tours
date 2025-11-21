@@ -31,23 +31,31 @@ router.post(
 
     validateUrl(imageUrl);
 
-    console.log(`Generating video for room ${order || 0}...`);
+    const roomIndex = order || 0;
+    console.log(`Generating video for room ${roomIndex}...`);
     console.log(`Image URL: ${imageUrl}`);
 
-    // Analyze image with GPT-5 Vision if no user description provided
+    // Analyze image with GPT-5 Vision to get room type, size, and spatial info
     let enhancedDescription = roomDescription;
-    if (!roomDescription) {
-      console.log('No room description provided. Analyzing image with GPT Vision...');
-      const visionAnalysis = await visionService.analyzeRoomImage(imageUrl);
-      if (visionAnalysis) {
+    let isExterior = roomIndex === 0; // First image assumed exterior
+    let isSmallRoom = false;
+
+    console.log('Analyzing image with GPT Vision...');
+    const visionAnalysis = await visionService.analyzeRoomImage(imageUrl);
+    if (visionAnalysis) {
+      isExterior = visionAnalysis.isExterior || roomIndex === 0;
+      isSmallRoom = visionAnalysis.isSmallRoom;
+      console.log(`Room type: ${visionAnalysis.roomType}, Exterior: ${isExterior}, Small room: ${isSmallRoom}`);
+
+      if (!roomDescription) {
         enhancedDescription = visionService.generateSpatialPrompt(visionAnalysis);
         console.log('Vision-enhanced description:', enhancedDescription);
       }
-    } else {
+    } else if (roomDescription) {
       console.log('Using user-provided description:', roomDescription);
     }
 
-    const finalPrompt = prompt || promptService.generateRoomPrompt(order || 0, enhancedDescription);
+    const finalPrompt = prompt || promptService.generateRoomPrompt(roomIndex, enhancedDescription, isExterior, isSmallRoom);
 
     console.log(`Final prompt: ${finalPrompt}`);
 
