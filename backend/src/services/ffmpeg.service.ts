@@ -264,22 +264,22 @@ export class FFmpegService {
       const escapedCityStateZip = escapeText(cityStateZip);
       const escapedPrice = escapeText(price);
 
-      // Calculate absolute positions
-      const boxY = videoHeight - 75;
-      const textY1 = videoHeight - 68;
-      const textY2 = videoHeight - 50;
-      const textY3 = videoHeight - 32;
+      // Calculate absolute positions (moved up 10% and smaller box)
+      const boxY = videoHeight - 183;
+      const textY1 = videoHeight - 175;
+      const textY2 = videoHeight - 157;
+      const textY3 = videoHeight - 139;
 
-      // Smaller box with 3 lines of text
-      // Line 1: Street address (13px)
-      // Line 2: City, State ZIP (11px)
-      // Line 3: Price (12px)
+      // Compact box with 3 lines of text
+      // Line 1: Street address (12px)
+      // Line 2: City, State ZIP (10px)
+      // Line 3: Price (11px)
       const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
       const filterComplex =
-        `drawbox=x=10:y=${boxY}:w=240:h=65:color=black:t=fill:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=13:fontcolor=white:x=18:y=${textY1}:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=11:fontcolor=white:x=18:y=${textY2}:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=12:fontcolor=white:x=18:y=${textY3}:enable='lt(t,${duration})',` +
+        `drawbox=x=10:y=${boxY}:w=200:h=55:color=black:t=fill:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=12:fontcolor=white:x=18:y=${textY1}:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=10:fontcolor=white:x=18:y=${textY2}:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=11:fontcolor=white:x=18:y=${textY3}:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);
