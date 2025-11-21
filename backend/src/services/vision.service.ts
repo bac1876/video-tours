@@ -36,11 +36,11 @@ export class VisionService {
     }
 
     try {
-      console.log('Analyzing room image with GPT-5.1 Instant...');
+      console.log('Analyzing room image with GPT-5 Nano...');
       console.log('Image URL:', imageUrl);
 
       const response = await this.client.chat.completions.create({
-        model: 'gpt-5.1-instant', // Using GPT-5.1 Instant (released Nov 2025) with adaptive reasoning
+        model: 'gpt-5-nano', // Using GPT-5 Nano for cost-effective vision analysis
         messages: [
           {
             role: 'system',
