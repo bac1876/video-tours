@@ -32,10 +32,12 @@ export class PromptService {
     const isExteriorShot = roomIndex === 0 || isExterior === true;
 
     if (isExteriorShot) {
-      // EXTERIOR: Slow zoom/approach is OK
-      prompt += `Slow cinematic approach toward the house. `;
-      prompt += `Camera gently moves forward, getting slightly closer to showcase the property. `;
-      prompt += `Smooth, slow dolly forward taking the full ${VIDEO_DURATION} seconds. `;
+      // EXTERIOR: Minimal movement to avoid window hallucinations
+      prompt += `Very gentle, subtle camera movement showcasing the exterior. `;
+      prompt += `Camera can drift forward slightly, but maintain distance from the house. `;
+      prompt += `Slow, steady shot taking the full ${VIDEO_DURATION} seconds. `;
+      prompt += `CRITICAL: Do NOT zoom into windows or glass surfaces. `;
+      prompt += `Do NOT reveal or create interior details visible through windows. `;
       prompt += `Maintain stable, professional real estate video feel. `;
       prompt += `Trees, plants, grass, and foliage remain still - no wind effect. `;
       prompt += `Do NOT add any ceiling fans, light fixtures, or indoor elements to outdoor scenes. `;
