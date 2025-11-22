@@ -1,10 +1,10 @@
 # Video Tours Project - Session State
-**Last Updated:** 2025-11-21
+**Last Updated:** 2025-11-22
 
 ## Current Status
 Working on Home Video Tours app - transforms 1-15 home photos into cinematic walkthrough videos using KIE.ai Sora API.
 
-## Recent Session Work (2025-11-21)
+## Recent Session Work (2025-11-21 & 2025-11-22)
 
 ### Issues Fixed Today
 1. ✅ **Text Overlay Position** - Fixed box appearing at top-left instead of bottom-left
@@ -45,6 +45,12 @@ Working on Home Video Tours app - transforms 1-15 home photos into cinematic wal
    - Explicit: "ONLY allow existing ceiling fans already visible in source image"
    - Exterior: "Do NOT add ceiling fans, light fixtures, or indoor elements to outdoor scenes"
 
+10. ✅ **Exterior Window Hallucinations** (2025-11-22) - Prevents zooming into windows revealing fake interiors
+   - Changed from aggressive "approach toward house" to "gentle drift"
+   - Added: "Do NOT zoom into windows or glass surfaces"
+   - Added: "Do NOT reveal or create interior details visible through windows"
+   - Maintains distance to prevent hallucinating room interiors through windows
+
 ### Outstanding Issues to Address
 
 #### 1. Small Room Rotation Not Working (PRIORITY)
@@ -72,6 +78,8 @@ Working on Home Video Tours app - transforms 1-15 home photos into cinematic wal
 
 ## Recent Commits (Last 10)
 ```
+91011a2 - Reduce exterior zoom to prevent window interior hallucinations
+8b5f4a3 - Save session state for resume
 53ecf49 - Prevent ceiling fan hallucinations
 fb2ea96 - Prevent retry loop when KIE API returns explicit failure
 5c4e891 - Prevent wind effects from ceiling fans
@@ -80,8 +88,6 @@ f032204 - Fix back button to preserve photos and property info
 ab919e7 - Allow intentional motion: ceiling fans spinning and lights brightening
 91f48bf - Fix overlay position and prevent unwanted object motion in videos
 653b499 - Adjust overlay: move up 10% and make box smaller
-68c8428 - Final overlay fixes: smaller black box and improved address parsing
-6ad1abf - Calculate box position in code instead of using FFmpeg variables
 ```
 
 ## Tech Stack
