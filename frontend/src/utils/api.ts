@@ -5,6 +5,7 @@ import {
   GenerateFullTourResponse,
   VideoClip,
   PropertyInfo,
+  JobStatusResponse, // Import JobStatusResponse
 } from '../types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
@@ -80,6 +81,11 @@ export const api = {
       }
     );
 
+    return response.data;
+  },
+
+  async getJobStatus(jobId: string): Promise<JobStatusResponse> {
+    const response = await apiClient.get<JobStatusResponse>(`/api/status/${jobId}`);
     return response.data;
   },
 

@@ -1,17 +1,17 @@
 import { Router, Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
 import { grokService } from '../services/grok.service';
 import { storageService } from '../services/storage.service';
 import { ffmpegService } from '../services/ffmpeg.service';
 import { promptService } from '../services/prompt.service';
 import { visionService } from '../services/vision.service';
+import { videoQueue } from '../services/queue.service';
 import { validateUrl, validateVideoClips } from '../utils/validation';
 import { asyncHandler } from '../utils/errors';
 import {
   GenerateRoomVideoRequest,
   GenerateRoomVideoResponse,
   GenerateFullTourRequest,
-  GenerateFullTourResponse,
-  VideoClip,
 } from '../types';
 
 const router = Router();
@@ -103,80 +103,16 @@ router.post(
         message: 'Property info (address and price) is required',
       });
     }
+    
+    const jobId = uuidv4();
+    await videoQueue.add('generate-tour', { clips, propertyInfo }, { jobId });
 
-    console.log(`Stitching ${clips.length} clips into full tour...`);
-    console.log(`Property: ${propertyInfo.address} - ${propertyInfo.price}`);
+    console.log(`Job ${jobId} added to the queue for property: ${propertyInfo.address}`);
 
-    const sortedClips = [...clips].sort((a, b) => a.order - b.order);
-
-    console.log('Downloading all clips...');
-    const downloadPromises = sortedClips.map((clip) =>
-      ffmpegService.downloadClip(clip.url)
-    );
-    const clipPaths = await Promise.all(downloadPromises);
-
-    console.log('Creating horizontal version (1080p)...');
-    const concatenatedPath = await ffmpegService.concatenateVideos(
-      clipPaths,
-      `tour-${Date.now()}.mp4`
-    );
-
-    // Add text overlay to beginning of concatenated video
-    console.log('Adding property info overlay to beginning...');
-    const videoWithText = await ffmpegService.addTextOverlay(
-      concatenatedPath,
-      propertyInfo.address,
-      propertyInfo.price,
-      3
-    );
-
-    // Add end screen with agent info
-    console.log('Adding agent info end screen...');
-    const horizontalPath = await ffmpegService.addEndScreen(
-      videoWithText,
-      propertyInfo.agentName,
-      propertyInfo.agentCompany,
-      propertyInfo.agentPhone,
-      3,
-      1
-    );
-
-    console.log('Creating compressed MLS version...');
-    const compressedPath = await ffmpegService.createCompressedVersion(
-      horizontalPath
-    );
-
-    console.log('Creating vertical version (9:16)...');
-    const verticalPath = await ffmpegService.createVerticalVersion(horizontalPath);
-
-    console.log('Uploading final videos to storage...');
-
-    const [horizontalUrl, compressedUrl, verticalUrl] = await Promise.all([
-      storageService.uploadFile(horizontalPath, `videos/tours/final_tour_${Date.now()}.mp4`, 'video/mp4'),
-      storageService.uploadFile(compressedPath, `videos/tours/final_tour_compressed_${Date.now()}.mp4`, 'video/mp4'),
-      storageService.uploadFile(verticalPath, `videos/tours/final_tour_vertical_${Date.now()}.mp4`, 'video/mp4'),
-    ]);
-
-    // Note: concatenatedPath and videoWithText are automatically cleaned up
-    // by addTextOverlay and addEndScreen methods
-    ffmpegService.cleanupFiles([
-      ...clipPaths,
-      horizontalPath,
-      compressedPath,
-      verticalPath,
-    ]);
-
-    const response: GenerateFullTourResponse = {
+    res.status(202).json({
       success: true,
-      videos: {
-        horizontal: horizontalUrl,
-        compressed: compressedUrl,
-        vertical: verticalUrl,
-      },
-    };
-
-    console.log('Full tour generation complete!');
-    res.json(response);
+      jobId: jobId,
+    });
   })
 );
 

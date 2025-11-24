@@ -1,31 +1,60 @@
 'use client';
 
 import React from 'react';
-import { VideoClip } from '../types';
+import { VideoClip, JobStatusResponse } from '../types'; // Import JobStatusResponse
 
 interface StatusProps {
   clips: VideoClip[];
   currentStep: 'generating-clips' | 'stitching' | 'complete';
-  progress: {
+  progress?: { // Make progress optional as it's not always used for stitching
     current: number;
     total: number;
     message: string;
   };
+  jobId?: string | null; // New: Optional jobId
+  jobStatus?: JobStatusResponse['state'] | null; // New: Optional jobStatus
+  jobProgress?: number; // New: Optional jobProgress
 }
 
-export default function Status({ clips, currentStep, progress }: StatusProps) {
+export default function Status({ clips, currentStep, progress, jobId, jobStatus, jobProgress }: StatusProps) {
   const completedClips = clips.filter((clip) => clip.status === 'completed').length;
   const failedClips = clips.filter((clip) => clip.status === 'failed').length;
   const totalClips = clips.length;
 
   const getProgressPercentage = () => {
-    if (currentStep === 'generating-clips') {
+    if (currentStep === 'generating-clips' && progress) {
       return (completedClips / totalClips) * 80; // 80% for clip generation
-    } else if (currentStep === 'stitching') {
-      return 80 + 20 * 0.5; // 80% + half of stitching
-    } else {
+    } else if (currentStep === 'stitching' && jobProgress !== undefined) {
+      // Job queue progress is between 0-100, we'll map it to 80-100% of overall
+      return 80 + (jobProgress * 0.2);
+    } else if (currentStep === 'complete') {
       return 100;
     }
+    return 0; // Default or initial state
+  };
+
+  const getStatusMessage = () => {
+    if (currentStep === 'generating-clips' && progress) {
+      return progress.message;
+    } else if (currentStep === 'stitching') {
+      switch (jobStatus) {
+        case 'waiting':
+          return 'Job queued, waiting to start...';
+        case 'active':
+          return 'Processing full tour video...';
+        case 'completed':
+          return 'Full tour video generation complete!';
+        case 'failed':
+          return 'Full tour video generation failed.';
+        case 'delayed':
+          return 'Job delayed, retrying...';
+        default:
+          return 'Initializing video stitching...';
+      }
+    } else if (currentStep === 'complete') {
+      return 'Your videos are ready!';
+    }
+    return 'Loading...';
   };
 
   const getStatusIcon = (status?: string) => {
@@ -50,7 +79,9 @@ export default function Status({ clips, currentStep, progress }: StatusProps) {
             />
           </svg>
         );
-      case 'generating':
+      case 'generating': // Used for individual clips
+      case 'waiting': // Used for job queue
+      case 'active': // Used for job queue
         return (
           <svg
             className="animate-spin w-5 h-5 text-blue-500"
@@ -83,17 +114,17 @@ export default function Status({ clips, currentStep, progress }: StatusProps) {
     <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Generating Your Walkthrough
+          {currentStep === 'complete' ? 'Generation Complete!' : 'Generating Your Walkthrough'}
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          This may take 5-10 minutes. Please do not close this window.
+          {currentStep === 'complete' ? 'Your videos are ready to download.' : 'This may take several minutes. Please do not close this window.'}
         </p>
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 space-y-6">
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
-            <span>{progress.message}</span>
+            <span>{getStatusMessage()}</span>
             <span>{Math.round(getProgressPercentage())}%</span>
           </div>
           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
@@ -151,31 +182,18 @@ export default function Status({ clips, currentStep, progress }: StatusProps) {
         {currentStep === 'stitching' && (
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <svg
-                className="animate-spin w-6 h-6 text-primary-600"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
+              {getStatusIcon(jobStatus || 'active')}
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white">
-                  Stitching Videos Together
+                  {getStatusMessage()}
                 </h3>
+                {jobId && (
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Job ID: {jobId}
+                  </p>
+                )}
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Creating horizontal, compressed, and vertical versions...
+                  This process involves stitching individual clips, adding overlays, and generating multiple video formats.
                 </p>
               </div>
             </div>

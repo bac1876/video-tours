@@ -5,6 +5,7 @@ import routes from './routes';
 import { errorHandler } from './utils/errors';
 import * as path from 'path';
 import * as fs from 'fs';
+import './services/queue.service.ts';
 
 dotenv.config();
 

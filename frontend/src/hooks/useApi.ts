@@ -105,19 +105,18 @@ export const useGenerateVideos = () => {
     }
   };
 
-  const generateFullTour = async (clips: VideoClip[], propertyInfo: PropertyInfo): Promise<GeneratedVideos | null> => {
-    setIsGenerating(true);
-    setError(null);
-    setProgress({ current: 0, total: 1, message: 'Stitching videos together...' });
+  const generateFullTour = async (clips: VideoClip[], propertyInfo: PropertyInfo): Promise<string | null> => {
+    // setIsGenerating(true); // Will be managed by polling
+    setError(null); // Clear previous errors
 
     try {
       const response = await api.generateFullTour(clips, propertyInfo);
-      return response.videos;
+      return response.jobId; // Return the jobId
     } catch (err: any) {
       setError(err.message);
       return null;
     } finally {
-      setIsGenerating(false);
+      // setIsGenerating(false); // Will be managed by polling
     }
   };
 

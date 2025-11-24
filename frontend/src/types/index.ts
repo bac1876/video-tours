@@ -35,7 +35,15 @@ export interface GenerateRoomVideoResponse {
 
 export interface GenerateFullTourResponse {
   success: boolean;
-  videos: GeneratedVideos;
+  jobId: string;
+}
+
+export interface JobStatusResponse {
+  success: boolean;
+  jobId: string;
+  state: 'waiting' | 'active' | 'completed' | 'failed' | 'delayed';
+  progress: number;
+  result?: GeneratedVideos;
 }
 
 export interface ErrorResponse {
@@ -52,7 +60,7 @@ export interface PropertyInfo {
   agentPhone: string;
 }
 
-export type AppStep = 'upload' | 'reorder' | 'generating' | 'download';
+export type AppStep = 'upload' | 'reorder' | 'generating' | 'processing' | 'download';
 
 export interface AppState {
   step: AppStep;
