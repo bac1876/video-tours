@@ -97,6 +97,23 @@ export const api = {
       return false;
     }
   },
+
+  async uploadLogo(file: File): Promise<{ logoUrl: string }> {
+    const formData = new FormData();
+    formData.append('logo', file);
+
+    const response = await apiClient.post<{ success: boolean; logoUrl: string }>(
+      '/api/upload/logo',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    return { logoUrl: response.data.logoUrl };
+  },
 };
 
 export default apiClient;

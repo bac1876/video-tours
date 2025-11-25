@@ -3,6 +3,7 @@
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Photo, PropertyInfo } from '../types';
+import { api } from '../utils/api';
 
 interface UploadProps {
   onUploadComplete: (photos: Photo[], propertyInfo: PropertyInfo) => void;
@@ -24,12 +25,16 @@ export default function Upload({
   const [previews, setPreviews] = useState<string[]>(initialPhotos?.map(p => p.url) || []);
   const [descriptions, setDescriptions] = useState<string[]>(initialPhotos?.map(p => p.description || '') || []);
   const [error, setError] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(initialPropertyInfo?.logoUrl || null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [propertyInfo, setPropertyInfo] = useState<PropertyInfo>(initialPropertyInfo || {
     address: '',
     price: '',
     agentName: '',
     agentCompany: '',
     agentPhone: '',
+    logoUrl: undefined,
   });
 
   const onDrop = useCallback((acceptedFiles: File[], rejectedFiles: any[]) => {
@@ -85,7 +90,7 @@ export default function Upload({
     setDescriptions(newDescriptions);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (files.length === 0) {
       setError('Please upload at least one photo');
       return;
@@ -94,6 +99,23 @@ export default function Upload({
     if (!propertyInfo.address || !propertyInfo.price || !propertyInfo.agentName || !propertyInfo.agentCompany || !propertyInfo.agentPhone) {
       setError('Please fill in all property and agent information');
       return;
+    }
+
+    let updatedPropertyInfo = { ...propertyInfo };
+
+    // Upload logo if present
+    if (logoFile) {
+      try {
+        setIsUploadingLogo(true);
+        const logoResponse = await api.uploadLogo(logoFile);
+        updatedPropertyInfo.logoUrl = logoResponse.logoUrl;
+      } catch (err: any) {
+        setError(`Failed to upload logo: ${err.message}`);
+        setIsUploadingLogo(false);
+        return;
+      } finally {
+        setIsUploadingLogo(false);
+      }
     }
 
     const photos: Photo[] = files.map((file, index) => ({
@@ -105,7 +127,7 @@ export default function Upload({
       description: descriptions[index] || undefined,
     }));
 
-    onUploadComplete(photos, propertyInfo);
+    onUploadComplete(photos, updatedPropertyInfo);
   };
 
   const formatPhoneNumber = (value: string) => {
@@ -129,6 +151,36 @@ export default function Upload({
   const handlePriceChange = (value: string) => {
     const formatted = formatPrice(value);
     setPropertyInfo({ ...propertyInfo, price: formatted });
+  };
+
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Logo must be an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Logo file must be less than 5MB');
+      return;
+    }
+
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
+    setError(null);
+  };
+
+  const removeLogo = () => {
+    if (logoPreview && logoPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(logoPreview);
+    }
+    setLogoFile(null);
+    setLogoPreview(null);
+    setPropertyInfo({ ...propertyInfo, logoUrl: undefined });
   };
 
   return (
@@ -218,6 +270,55 @@ export default function Upload({
               maxLength={14}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
             />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Logo (Optional)
+            </label>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              Upload your company or agent logo to display in the bottom right corner of the video
+            </p>
+
+            {logoPreview ? (
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <img
+                    src={logoPreview}
+                    alt="Logo preview"
+                    className="h-16 w-auto max-w-[200px] object-contain rounded border border-gray-300 dark:border-gray-600 bg-white p-1"
+                  />
+                  <button
+                    onClick={removeLogo}
+                    disabled={isUploading}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 disabled:opacity-50"
+                  >
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {logoFile?.name || 'Logo uploaded'}
+                </span>
+              </div>
+            ) : (
+              <label className="flex items-center justify-center w-full h-20 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-primary-400 dark:hover:border-primary-600 transition-colors">
+                <div className="flex items-center space-x-2 text-gray-500 dark:text-gray-400">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <span className="text-sm">Click to upload logo (PNG, JPG - max 5MB)</span>
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  accept="image/png,image/jpeg,image/jpg,image/webp"
+                  onChange={handleLogoUpload}
+                  disabled={isUploading}
+                />
+              </label>
+            )}
           </div>
         </div>
       </div>
@@ -345,10 +446,10 @@ export default function Upload({
 
           <button
             onClick={handleSubmit}
-            disabled={isUploading || files.length === 0}
+            disabled={isUploading || isUploadingLogo || files.length === 0}
             className="w-full bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white font-semibold py-4 px-6 rounded-xl transition-colors duration-200 disabled:cursor-not-allowed"
           >
-            {isUploading ? (
+            {isUploading || isUploadingLogo ? (
               <span className="flex items-center justify-center space-x-2">
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                   <circle
@@ -366,7 +467,7 @@ export default function Upload({
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   />
                 </svg>
-                <span>Uploading...</span>
+                <span>{isUploadingLogo ? 'Uploading logo...' : 'Uploading...'}</span>
               </span>
             ) : (
               `Continue with ${files.length} photo${files.length > 1 ? 's' : ''}`

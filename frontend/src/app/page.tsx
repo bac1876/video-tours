@@ -5,9 +5,10 @@ import Upload from '../components/Upload';
 import Reorder from '../components/Reorder';
 import Status from '../components/Status';
 import Download from '../components/Download';
+import ClipReview from '../components/ClipReview';
 import { useUpload, useGenerateVideos } from '../hooks/useApi';
 import { Photo, VideoClip, GeneratedVideos, AppStep, PropertyInfo } from '../types';
-import { api } from '../utils/api'; // Import api to poll job status
+import { api } from '../utils/api';
 
 export default function Home() {
   const [step, setStep] = useState<AppStep>('upload');
@@ -16,10 +17,12 @@ export default function Home() {
   const [propertyInfo, setPropertyInfo] = useState<PropertyInfo | null>(null);
   const [finalVideos, setFinalVideos] = useState<GeneratedVideos | null>(null);
   const [generationStep, setGenerationStep] = useState<'generating-clips' | 'stitching' | 'complete'>('generating-clips');
-  const [jobId, setJobId] = useState<string | null>(null); // New state for jobId
-  const [jobStatus, setJobStatus] = useState<'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | null>(null); // New state for job status
-  const [jobProgress, setJobProgress] = useState<number>(0); // New state for job progress
-  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref for polling interval
+  const [jobId, setJobId] = useState<string | null>(null);
+  const [jobStatus, setJobStatus] = useState<'waiting' | 'active' | 'completed' | 'failed' | 'delayed' | null>(null);
+  const [jobProgress, setJobProgress] = useState<number>(0);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const { upload, isUploading, error: uploadError } = useUpload();
   const { generateAllVideos, generateFullTour, error: generateError, progress } = useGenerateVideos();
@@ -53,7 +56,7 @@ export default function Home() {
 
   const handleReorderComplete = async (reorderedPhotos: Photo[]) => {
     setPhotos(reorderedPhotos);
-    setStep('generating'); // First, generate individual clips
+    setStep('generating');
     setGenerationStep('generating-clips');
 
     const initialClips = reorderedPhotos.map((photo) => ({
@@ -68,24 +71,69 @@ export default function Home() {
 
     if (generatedClips.length > 0) {
       setClips(generatedClips);
-      // setGenerationStep('stitching'); // This is now done in job queue
-
-      // Call generateFullTour which now returns a jobId
-      const newJobId = await generateFullTour(generatedClips, propertyInfo!); // Use the hook's generateFullTour
-
-      if (newJobId) {
-        setJobId(newJobId);
-        setStep('processing'); // New step to indicate job queue processing
-        setJobStatus('waiting');
-        setJobProgress(0);
-      } else {
-        alert('Failed to start full tour generation. Please try again.');
-        setStep('reorder'); // Go back to reorder if job dispatch fails
-      }
+      // Go to review step instead of directly processing
+      setStep('review');
     } else {
       alert('Failed to generate any clips. Please try again.');
-      setStep('reorder'); // Go back to reorder if clips generation fails
+      setStep('reorder');
     }
+  };
+
+  const handleRegenerateClip = async (clipIndex: number, photo: Photo): Promise<VideoClip | null> => {
+    setIsRegenerating(true);
+    setRegeneratingIndex(clipIndex);
+
+    try {
+      const response = await api.generateRoomVideo(photo.url, '', photo.order, photo.description);
+      const newClip: VideoClip = {
+        url: response.videoUrl,
+        duration: response.duration,
+        order: response.order,
+        status: 'completed',
+      };
+
+      // Update the clip in the list
+      setClips(prevClips => {
+        const updatedClips = [...prevClips];
+        updatedClips[clipIndex] = newClip;
+        return updatedClips;
+      });
+
+      return newClip;
+    } catch (error: any) {
+      console.error('Failed to regenerate clip:', error);
+      alert(`Failed to regenerate clip: ${error.message}`);
+      return null;
+    } finally {
+      setIsRegenerating(false);
+      setRegeneratingIndex(null);
+    }
+  };
+
+  const handleApproveAllClips = async () => {
+    // Filter only completed clips
+    const completedClips = clips.filter(clip => clip.status === 'completed' && clip.url);
+
+    if (completedClips.length === 0) {
+      alert('No completed clips to process.');
+      return;
+    }
+
+    // Start the full tour generation
+    const newJobId = await generateFullTour(completedClips, propertyInfo!);
+
+    if (newJobId) {
+      setJobId(newJobId);
+      setStep('processing');
+      setJobStatus('waiting');
+      setJobProgress(0);
+    } else {
+      alert('Failed to start full tour generation. Please try again.');
+    }
+  };
+
+  const handleBackToReorder = () => {
+    setStep('reorder');
   };
 
   // Polling effect for job status
@@ -175,7 +223,7 @@ export default function Home() {
         />
       )}
 
-      {/* Existing generating step for clips */}
+      {/* Generating step for clips */}
       {step === 'generating' && (
         <Status
           clips={clips}
@@ -184,11 +232,24 @@ export default function Home() {
         />
       )}
 
-      {/* New processing step for full tour job */}
+      {/* Review step - preview and approve clips before stitching */}
+      {step === 'review' && (
+        <ClipReview
+          clips={clips}
+          photos={photos}
+          onRegenerateClip={handleRegenerateClip}
+          onApproveAll={handleApproveAllClips}
+          onBack={handleBackToReorder}
+          isRegenerating={isRegenerating}
+          regeneratingIndex={regeneratingIndex}
+        />
+      )}
+
+      {/* Processing step for full tour job */}
       {step === 'processing' && (
         <Status
-          clips={clips} // Still show clips, maybe greyed out or with a different indicator
-          currentStep={'stitching'} // Indicate stitching for the UI
+          clips={clips}
+          currentStep={'stitching'}
           jobId={jobId}
           jobStatus={jobStatus}
           jobProgress={jobProgress}
@@ -203,13 +264,13 @@ export default function Home() {
       )}
 
       <div className="flex justify-center space-x-2 pt-8">
-        {['upload', 'reorder', 'generating', 'processing', 'download'].map((s, index) => (
+        {['upload', 'reorder', 'generating', 'review', 'processing', 'download'].map((s, index) => (
           <div
             key={s}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               s === step
                 ? 'bg-primary-600 w-8'
-                : index < ['upload', 'reorder', 'generating', 'processing', 'download'].indexOf(step)
+                : index < ['upload', 'reorder', 'generating', 'review', 'processing', 'download'].indexOf(step)
                 ? 'bg-primary-400'
                 : 'bg-gray-300 dark:bg-gray-600'
             }`}

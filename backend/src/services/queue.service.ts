@@ -109,7 +109,7 @@ const startWorker = () => {
       );
 
       console.log('Adding agent info end screen...');
-      const horizontalPath = await ffmpegService.addEndScreen(
+      let horizontalPath = await ffmpegService.addEndScreen(
         videoWithText,
         propertyInfo.agentName,
         propertyInfo.agentCompany,
@@ -117,6 +117,12 @@ const startWorker = () => {
         3,
         1
       );
+
+      // Add logo overlay if logoUrl is provided
+      if (propertyInfo.logoUrl) {
+        console.log('Adding logo overlay...');
+        horizontalPath = await ffmpegService.addLogoOverlay(horizontalPath, propertyInfo.logoUrl);
+      }
 
       console.log('Creating compressed MLS version...');
       const compressedPath = await ffmpegService.createCompressedVersion(horizontalPath);

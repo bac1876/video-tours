@@ -81,4 +81,53 @@ router.post(
   })
 );
 
+// Logo upload endpoint
+const logoUpload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max for logos
+    files: 1,
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only JPG, PNG, and WebP are allowed.'));
+    }
+  },
+});
+
+router.post(
+  '/logo',
+  logoUpload.single('logo'),
+  asyncHandler(async (req: Request, res: Response) => {
+    const file = req.file;
+
+    if (!file) {
+      return res.status(400).json({
+        success: false,
+        error: 'ValidationError',
+        message: 'Logo file is required',
+      });
+    }
+
+    console.log(`Uploading logo to storage...`);
+
+    const extension = storageService.getFileExtension(file.originalname);
+    const key = storageService.generateUniqueKey('logos', extension);
+
+    const logoUrl = await storageService.uploadFile(file.path, key, file.mimetype);
+
+    fs.unlinkSync(file.path);
+
+    console.log(`Successfully uploaded logo: ${logoUrl}`);
+
+    res.json({
+      success: true,
+      logoUrl,
+    });
+  })
+);
+
 export default router;

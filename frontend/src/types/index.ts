@@ -58,9 +58,10 @@ export interface PropertyInfo {
   agentName: string;
   agentCompany: string;
   agentPhone: string;
+  logoUrl?: string;
 }
 
-export type AppStep = 'upload' | 'reorder' | 'generating' | 'processing' | 'download';
+export type AppStep = 'upload' | 'reorder' | 'generating' | 'review' | 'processing' | 'download';
 
 export interface AppState {
   step: AppStep;

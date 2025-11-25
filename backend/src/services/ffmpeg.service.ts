@@ -486,6 +486,103 @@ export class FFmpegService {
       }
     });
   }
+
+  async addLogoOverlay(
+    inputPath: string,
+    logoUrl: string
+  ): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.ensureUploadsDir();
+
+        // Download logo file
+        const logoFilename = `logo-${uuidv4()}.png`;
+        const logoPath = path.join(this.uploadsDir, logoFilename);
+
+        console.log(`Downloading logo from: ${logoUrl}`);
+
+        const response = await axios.get(logoUrl, {
+          responseType: 'stream',
+          timeout: 30000,
+        });
+
+        const writer = fs.createWriteStream(logoPath);
+        response.data.pipe(writer);
+
+        await new Promise<void>((resolveDownload, rejectDownload) => {
+          writer.on('finish', resolveDownload);
+          writer.on('error', rejectDownload);
+        });
+
+        console.log(`Logo downloaded to: ${logoPath}`);
+
+        const outputFilename = `logo-overlay-${uuidv4()}.mp4`;
+        const outputPath = path.join(this.uploadsDir, outputFilename);
+
+        console.log(`Adding logo overlay to video...`);
+        console.log(`Input: ${inputPath}`);
+        console.log(`Logo: ${logoPath}`);
+        console.log(`Output: ${outputPath}`);
+
+        // Logo overlay in bottom right corner with padding
+        // Scale logo to max 150px width while maintaining aspect ratio
+        const filterComplex =
+          `[1:v]scale=150:-1[logo];` +
+          `[0:v][logo]overlay=W-w-20:H-h-20:format=auto`;
+
+        ffmpeg()
+          .input(inputPath)
+          .input(logoPath)
+          .complexFilter(filterComplex)
+          .outputOptions([
+            '-c:v libx264',
+            '-preset slow',
+            `-crf ${VIDEO_QUALITY}`,
+            '-an',
+            '-pix_fmt yuv420p',
+          ])
+          .output(outputPath)
+          .on('start', (commandLine) => {
+            console.log('FFmpeg command:', commandLine);
+          })
+          .on('progress', (progress) => {
+            console.log(`Adding logo: ${progress.percent?.toFixed(2)}% done`);
+          })
+          .on('end', () => {
+            console.log(`Logo overlay complete: ${outputPath}`);
+            // Cleanup temporary files
+            try {
+              if (fs.existsSync(logoPath)) {
+                fs.unlinkSync(logoPath);
+                console.log(`Cleaned up logo file: ${logoPath}`);
+              }
+              if (fs.existsSync(inputPath)) {
+                fs.unlinkSync(inputPath);
+                console.log(`Cleaned up input file: ${inputPath}`);
+              }
+            } catch (cleanupError: any) {
+              console.warn(`Failed to cleanup temp files: ${cleanupError.message}`);
+            }
+            resolve(outputPath);
+          })
+          .on('error', (error) => {
+            console.error('FFmpeg error:', error.message);
+            // Cleanup on error
+            try {
+              if (fs.existsSync(logoPath)) {
+                fs.unlinkSync(logoPath);
+              }
+            } catch (cleanupError: any) {
+              console.warn(`Failed to cleanup on error: ${cleanupError.message}`);
+            }
+            reject(new FFmpegError(`Logo overlay failed: ${error.message}`));
+          })
+          .run();
+      } catch (error: any) {
+        reject(new FFmpegError(`Logo overlay setup failed: ${error.message}`));
+      }
+    });
+  }
 }
 
 export const ffmpegService = new FFmpegService();

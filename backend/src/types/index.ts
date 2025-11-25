@@ -32,6 +32,7 @@ export interface PropertyInfo {
   agentName: string;
   agentCompany: string;
   agentPhone: string;
+  logoUrl?: string;
 }
 
 export interface GenerateFullTourRequest {
