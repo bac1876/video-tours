@@ -22,7 +22,7 @@ export default function Home() {
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null); // Ref for polling interval
 
   const { upload, isUploading, error: uploadError } = useUpload();
-  const { generateAllVideos, error: generateError } = useGenerateVideos();
+  const { generateAllVideos, generateFullTour, error: generateError, progress } = useGenerateVideos();
 
   const handleUploadComplete = async (uploadedPhotos: Photo[], uploadedPropertyInfo: PropertyInfo) => {
     // If photos already have URLs (coming back from reorder), skip upload
@@ -71,7 +71,7 @@ export default function Home() {
       // setGenerationStep('stitching'); // This is now done in job queue
 
       // Call generateFullTour which now returns a jobId
-      const newJobId = await useGenerateVideos().generateFullTour(generatedClips, propertyInfo!); // Use the hook's generateFullTour
+      const newJobId = await generateFullTour(generatedClips, propertyInfo!); // Use the hook's generateFullTour
 
       if (newJobId) {
         setJobId(newJobId);
@@ -180,7 +180,7 @@ export default function Home() {
         <Status
           clips={clips}
           currentStep={generationStep}
-          progress={useGenerateVideos().progress} // This progress is for individual clip generation
+          progress={progress}
         />
       )}
 
