@@ -28,14 +28,15 @@ export class StorageError extends AppError {
   }
 }
 
-export class GrokAPIError extends AppError {
+export class VideoAPIError extends AppError {
   constructor(message: string) {
-    super(500, `Grok API error: ${message}`);
+    super(500, `Video API error: ${message}`);
   }
 }
 
-// Alias for backward compatibility
-export const SoraAPIError = GrokAPIError;
+// Aliases for backward compatibility
+export const GrokAPIError = VideoAPIError;
+export const SoraAPIError = VideoAPIError;
 
 export class FFmpegError extends AppError {
   constructor(message: string) {

@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import { grokService } from '../services/grok.service';
+import { videoService } from '../services/video.service';
 import { storageService } from '../services/storage.service';
 import { ffmpegService } from '../services/ffmpeg.service';
 import { promptService } from '../services/prompt.service';
@@ -59,10 +59,10 @@ router.post(
 
     console.log(`Final prompt: ${finalPrompt}`);
 
-    const videoUrl = await grokService.generateVideo(imageUrl, finalPrompt);
+    const videoUrl = await videoService.generateVideo(imageUrl, finalPrompt);
 
-    const tempPath = grokService.generateTempPath('room');
-    const downloadedPath = await grokService.downloadVideo(videoUrl, tempPath);
+    const tempPath = videoService.generateTempPath('room');
+    const downloadedPath = await videoService.downloadVideo(videoUrl, tempPath);
 
     const extension = storageService.getFileExtension(downloadedPath);
     const key = storageService.generateUniqueKey('videos/clips', extension);

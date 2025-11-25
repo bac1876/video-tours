@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GrokAPIError } from '../utils/errors';
+import { VideoAPIError } from '../utils/errors';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -41,7 +41,7 @@ interface KieResultJson {
   videoUrl?: string;
 }
 
-export class GrokService {
+export class VideoGenerationService {
   private apiKey: string;
   private apiUrl: string;
 
@@ -60,7 +60,7 @@ export class GrokService {
     retryCount = 0
   ): Promise<string> {
     try {
-      console.log(`Generating video with Grok API (attempt ${retryCount + 1}/${MAX_RETRIES})`);
+      console.log(`Generating video (attempt ${retryCount + 1}/${MAX_RETRIES})`);
       console.log(`Image URL: ${imageUrl}`);
       console.log(`Prompt: ${prompt}`);
 
@@ -74,7 +74,7 @@ export class GrokService {
 
       return videoUrl;
     } catch (error: any) {
-      console.error(`Grok API error (attempt ${retryCount + 1}):`, error.message);
+      console.error(`Video API error (attempt ${retryCount + 1}):`, error.message);
 
       if (retryCount < MAX_RETRIES - 1) {
         console.log(`Retrying in ${RETRY_DELAY / 1000} seconds...`);
@@ -82,7 +82,7 @@ export class GrokService {
         return this.generateVideo(imageUrl, prompt, retryCount + 1);
       }
 
-      throw new GrokAPIError(
+      throw new VideoAPIError(
         `Failed to generate video after ${MAX_RETRIES} attempts: ${error.message}`
       );
     }
@@ -90,17 +90,16 @@ export class GrokService {
 
   private async createTask(imageUrl: string, prompt: string): Promise<string> {
     try {
-      // Grok outputs 6-second videos by default
       const requestPayload = {
-        model: 'grok-imagine/image-to-video', // Grok image-to-video model
+        model: 'grok-imagine/image-to-video', // KIE.ai model identifier
         input: {
           prompt: prompt,
-          image_urls: [imageUrl], // Must be array format per KIE.ai API spec
-          mode: 'normal', // Options: 'fun', 'normal', 'spicy'
+          image_urls: [imageUrl],
+          mode: 'normal',
         },
       };
 
-      console.log('=== KIE API REQUEST ===');
+      console.log('=== VIDEO API REQUEST ===');
       console.log('Endpoint:', `${this.apiUrl}/jobs/createTask`);
       console.log('Payload:', JSON.stringify(requestPayload, null, 2));
 
@@ -115,28 +114,28 @@ export class GrokService {
         }
       );
 
-      console.log('=== KIE API RESPONSE ===');
+      console.log('=== VIDEO API RESPONSE ===');
       console.log('Status:', response.status);
       console.log('Data:', JSON.stringify(response.data, null, 2));
 
       if (response.data.code !== 200) {
-        throw new GrokAPIError(`Failed to create task: ${response.data.message}`);
+        throw new VideoAPIError(`Failed to create task: ${response.data.message}`);
       }
 
       return response.data.data.taskId;
     } catch (error: any) {
-      console.error('=== KIE API ERROR ===');
+      console.error('=== VIDEO API ERROR ===');
       if (error.response) {
         console.error('Status Code:', error.response.status);
         console.error('Response Data:', JSON.stringify(error.response.data, null, 2));
         console.error('Response Headers:', JSON.stringify(error.response.headers, null, 2));
-        throw new GrokAPIError(
-          `KIE API error (${error.response.status}): ${JSON.stringify(error.response.data)}`
+        throw new VideoAPIError(
+          `Video API error (${error.response.status}): ${JSON.stringify(error.response.data)}`
         );
       }
       console.error('Error Details:', error.message);
       console.error('Full Error:', JSON.stringify(error, null, 2));
-      throw new GrokAPIError(`Failed to create task: ${error.message}`);
+      throw new VideoAPIError(`Failed to create task: ${error.message}`);
     }
   }
 
@@ -156,25 +155,22 @@ export class GrokService {
         );
 
         if (response.data.code !== 200) {
-          throw new GrokAPIError(`Failed to check status: ${response.data.message}`);
+          throw new VideoAPIError(`Failed to check status: ${response.data.message}`);
         }
 
         const state = response.data.data.state;
         console.log(`Task ${taskId} status: ${state}`);
 
         if (state === 'success') {
-          // Parse the resultJson to get video URL
           if (!response.data.data.resultJson) {
-            throw new GrokAPIError('No result JSON in successful response');
+            throw new VideoAPIError('No result JSON in successful response');
           }
 
           const resultJson: KieResultJson = JSON.parse(response.data.data.resultJson);
-
-          // Video URL might be in resultUrls array or videoUrl field
           const videoUrl = resultJson.videoUrl || resultJson.resultUrls?.[0];
 
           if (!videoUrl) {
-            throw new GrokAPIError('No video URL in result');
+            throw new VideoAPIError('No video URL in result');
           }
 
           return videoUrl;
@@ -182,16 +178,14 @@ export class GrokService {
 
         if (state === 'fail') {
           const errorMsg = response.data.data.failMsg || 'Unknown error';
-          const error = new GrokAPIError(`Video generation failed: ${errorMsg}`);
-          // Allow retry - will create a new task on next attempt
+          const error = new VideoAPIError(`Video generation failed: ${errorMsg}`);
           throw error;
         }
 
-        // States: queuing, processing, generating - keep polling
         console.log(`Video generation in progress (${state})... polling again in ${POLLING_INTERVAL / 1000}s`);
         await this.sleep(POLLING_INTERVAL);
       } catch (error: any) {
-        if (error instanceof GrokAPIError) {
+        if (error instanceof VideoAPIError) {
           throw error;
         }
         console.error('Error polling for video:', error.message);
@@ -199,7 +193,7 @@ export class GrokService {
       }
     }
 
-    throw new GrokAPIError('Video generation timed out after 5 minutes');
+    throw new VideoAPIError('Video generation timed out after 5 minutes');
   }
 
   async downloadVideo(videoUrl: string, outputPath: string): Promise<string> {
@@ -208,7 +202,7 @@ export class GrokService {
 
       const response = await axios.get(videoUrl, {
         responseType: 'stream',
-        timeout: 120000, // 2 minutes timeout
+        timeout: 120000,
       });
 
       const writer = fs.createWriteStream(outputPath);
@@ -221,11 +215,11 @@ export class GrokService {
           resolve(outputPath);
         });
         writer.on('error', (error) => {
-          reject(new GrokAPIError(`Failed to download video: ${error.message}`));
+          reject(new VideoAPIError(`Failed to download video: ${error.message}`));
         });
       });
     } catch (error: any) {
-      throw new GrokAPIError(`Failed to download video: ${error.message}`);
+      throw new VideoAPIError(`Failed to download video: ${error.message}`);
     }
   }
 
@@ -243,11 +237,12 @@ export class GrokService {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // Helper method to get cost estimate
   getCostEstimate(durationSeconds: number = VIDEO_DURATION): number {
-    // Using Grok pricing
     return durationSeconds * 0.015;
   }
 }
 
-export const grokService = new GrokService();
+export const videoService = new VideoGenerationService();
+
+// Backward compatibility alias
+export const grokService = videoService;
