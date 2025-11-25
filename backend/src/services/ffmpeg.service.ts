@@ -271,15 +271,18 @@ export class FFmpegService {
       const textY3 = videoHeight - 33;
 
       // Compact box with 3 lines of text
-      // Line 1: Street address (12px)
-      // Line 2: City, State ZIP (10px)
-      // Line 3: Price (11px)
-      const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
+      // Line 1: Street address (larger, Bebas Neue)
+      // Line 2: City, State ZIP (smaller)
+      // Line 3: Price (medium)
+      const bebasFontFile = '/app/fonts/BebasNeue-Regular.ttf';
+      const fallbackFontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
+      // Use Bebas Neue for main text, fallback for availability
+      const fontFile = bebasFontFile;
       const filterComplex =
-        `drawbox=x=10:y=${boxY}:w=200:h=55:color=black:t=fill:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=12:fontcolor=white:x=18:y=${textY1}:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=10:fontcolor=white:x=18:y=${textY2}:enable='lt(t,${duration})',` +
-        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=11:fontcolor=white:x=18:y=${textY3}:enable='lt(t,${duration})',` +
+        `drawbox=x=10:y=${boxY}:w=220:h=60:color=black:t=fill:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedStreet}':fontsize=16:fontcolor=white:x=18:y=${textY1}:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedCityStateZip}':fontsize=12:fontcolor=white:x=18:y=${textY2}:enable='lt(t,${duration})',` +
+        `drawtext=fontfile=${fontFile}:text='${escapedPrice}':fontsize=14:fontcolor=white:x=18:y=${textY3}:enable='lt(t,${duration})',` +
         'format=yuv420p';
 
       console.log('Filter complex:', filterComplex);
@@ -354,11 +357,11 @@ export class FFmpegService {
         const escapedCompany = escapeText(agentCompany);
         const escapedPhone = escapeText(agentPhone);
 
-        const fontFile = '/usr/share/fonts/ttf-dejavu/DejaVuSans.ttf';
+        const fontFile = '/app/fonts/BebasNeue-Regular.ttf';
         const endScreenFilter =
-          `drawtext=fontfile=${fontFile}:text='${escapedName}':fontsize=60:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
-          `drawtext=fontfile=${fontFile}:text='${escapedCompany}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
-          `drawtext=fontfile=${fontFile}:text='${escapedPhone}':fontsize=50:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
+          `drawtext=fontfile=${fontFile}:text='${escapedName}':fontsize=72:fontcolor=white:x=(w-text_w)/2:y=h/3,` +
+          `drawtext=fontfile=${fontFile}:text='${escapedCompany}':fontsize=56:fontcolor=white:x=(w-text_w)/2:y=h/2,` +
+          `drawtext=fontfile=${fontFile}:text='${escapedPhone}':fontsize=56:fontcolor=white:x=(w-text_w)/2:y=2*h/3,` +
           'format=yuv420p';
 
         console.log('End screen filter:', endScreenFilter);

@@ -76,12 +76,6 @@ export class GrokService {
     } catch (error: any) {
       console.error(`Grok API error (attempt ${retryCount + 1}):`, error.message);
 
-      // Don't retry if error is explicitly marked as non-retryable (e.g., KIE API returned 'fail')
-      if ((error as any).retryable === false) {
-        console.log('Error is non-retryable, failing immediately');
-        throw error;
-      }
-
       if (retryCount < MAX_RETRIES - 1) {
         console.log(`Retrying in ${RETRY_DELAY / 1000} seconds...`);
         await this.sleep(RETRY_DELAY);
@@ -189,7 +183,7 @@ export class GrokService {
         if (state === 'fail') {
           const errorMsg = response.data.data.failMsg || 'Unknown error';
           const error = new GrokAPIError(`Video generation failed: ${errorMsg}`);
-          (error as any).retryable = false; // Mark as non-retryable
+          // Allow retry - will create a new task on next attempt
           throw error;
         }
 

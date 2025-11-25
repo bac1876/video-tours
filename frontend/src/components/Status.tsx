@@ -187,13 +187,8 @@ export default function Status({ clips, currentStep, progress, jobId, jobStatus,
                 <h3 className="font-semibold text-gray-900 dark:text-white">
                   {getStatusMessage()}
                 </h3>
-                {jobId && (
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Job ID: {jobId}
-                  </p>
-                )}
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  This process involves stitching individual clips, adding overlays, and generating multiple video formats.
+                  Creating your final walkthrough video...
                 </p>
               </div>
             </div>

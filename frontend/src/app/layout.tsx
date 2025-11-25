@@ -48,7 +48,7 @@ export default function RootLayout({
                 </div>
                 <div className="flex items-center space-x-4">
                   <span className="text-sm text-gray-600 dark:text-gray-400">
-                    Powered by Grok AI
+                    AI-Powered Tours
                   </span>
                 </div>
               </div>

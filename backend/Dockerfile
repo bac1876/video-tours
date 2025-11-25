@@ -19,6 +19,10 @@ COPY . .
 RUN npm run build
 
 RUN mkdir -p /app/uploads
+RUN mkdir -p /app/fonts
+
+# Copy custom fonts
+COPY fonts/BebasNeue-Regular.ttf /app/fonts/
 
 EXPOSE 3001
 

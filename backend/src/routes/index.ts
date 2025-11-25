@@ -12,7 +12,7 @@ router.use('/status', statusRoutes);
 router.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Sora Walkthrough API is running',
+    message: 'Video Tours API is running',
     timestamp: new Date().toISOString(),
   });
 });

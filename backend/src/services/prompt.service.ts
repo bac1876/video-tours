@@ -47,6 +47,7 @@ export class PromptService {
       prompt += `The camera rotates horizontally in place - like standing on a lazy susan that slowly turns. `;
       prompt += `The viewer slowly turns their gaze from left to right across the visible room. `;
       prompt += `Take the full ${VIDEO_DURATION} seconds for this slow, smooth rotation. `;
+      prompt += `CRITICAL: Maintain CONSTANT speed throughout - no speeding up, no slowing down, no acceleration. `;
       prompt += `CRITICAL: Do NOT zoom in or out. Do NOT move the camera forward or backward. `;
       prompt += `The camera position stays fixed - ONLY the viewing angle changes. `;
       prompt += `No dolly, no push-in, no zoom - only rotation in place. `;
@@ -55,8 +56,9 @@ export class PromptService {
       prompt += `Towels, curtains, and all fabrics remain completely still with no air movement. `;
     } else {
       // LARGE INTERIOR ROOM: Slow movement/zoom is OK
-      prompt += `Smooth camera movement through the space. `;
+      prompt += `Smooth, constant-speed camera movement through the space. `;
       prompt += `Camera can gently move forward or pan across the room to showcase the space. `;
+      prompt += `CRITICAL: Maintain CONSTANT speed throughout - no speeding up, no slowing down, no acceleration. `;
       prompt += `Slow, cinematic movement taking the full ${VIDEO_DURATION} seconds. `;
       prompt += `Professional real estate walkthrough feel. `;
       prompt += `ONLY allow existing ceiling fans already visible in the source image to spin their blades slowly. `;
