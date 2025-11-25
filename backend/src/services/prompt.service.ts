@@ -32,46 +32,48 @@ export class PromptService {
     const isExteriorShot = roomIndex === 0 || isExterior === true;
 
     if (isExteriorShot) {
-      // EXTERIOR: Minimal movement to avoid window hallucinations
-      prompt += `Very gentle, subtle camera movement showcasing the exterior. `;
+      // EXTERIOR: Minimal movement, strict anti-hallucination
+      prompt += `EXTERIOR SHOT - This is an OUTDOOR scene. `;
+      prompt += `Very gentle, subtle camera movement showcasing the exterior of the building. `;
       prompt += `Camera can drift forward slightly, but maintain distance from the house. `;
       prompt += `Slow, steady shot taking the full ${VIDEO_DURATION} seconds. `;
+      prompt += `CRITICAL: Maintain CONSTANT speed throughout - no speeding up or slowing down. `;
       prompt += `CRITICAL: Do NOT zoom into windows or glass surfaces. `;
       prompt += `Do NOT reveal or create interior details visible through windows. `;
-      prompt += `Maintain stable, professional real estate video feel. `;
       prompt += `Trees, plants, grass, and foliage remain still - no wind effect. `;
-      prompt += `Do NOT add any ceiling fans, light fixtures, or indoor elements to outdoor scenes. `;
+      prompt += `ABSOLUTE PROHIBITION - DO NOT ADD: ceiling fans, indoor light fixtures, chandeliers, pendant lights, indoor furniture, curtains, drapes, window treatments, or ANY indoor elements. `;
+      prompt += `This is OUTSIDE - there are NO ceiling fans outdoors. There are NO indoor fixtures outdoors. `;
+      prompt += `If you see sky, grass, trees, or building exterior - this is OUTDOOR and must have ZERO indoor elements. `;
     } else if (isSmallRoom) {
       // SMALL ROOM (bedroom, bathroom): Rotation only, no zoom
-      prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
+      prompt += `INTERIOR ROOM - Simulate a person standing still in the center, slowly rotating their head to look around. `;
       prompt += `The camera rotates horizontally in place - like standing on a lazy susan that slowly turns. `;
-      prompt += `The viewer slowly turns their gaze from left to right across the visible room. `;
       prompt += `Take the full ${VIDEO_DURATION} seconds for this slow, smooth rotation. `;
       prompt += `CRITICAL: Maintain CONSTANT speed throughout - no speeding up, no slowing down, no acceleration. `;
       prompt += `CRITICAL: Do NOT zoom in or out. Do NOT move the camera forward or backward. `;
       prompt += `The camera position stays fixed - ONLY the viewing angle changes. `;
       prompt += `No dolly, no push-in, no zoom - only rotation in place. `;
-      prompt += `ONLY allow existing ceiling fans already visible in the source image to spin their blades slowly. `;
-      prompt += `Do NOT add ceiling fans or light fixtures that are not in the source image. `;
-      prompt += `Towels, curtains, and all fabrics remain completely still with no air movement. `;
     } else {
       // LARGE INTERIOR ROOM: Slow movement/zoom is OK
-      prompt += `Smooth, constant-speed camera movement through the space. `;
+      prompt += `INTERIOR ROOM - Smooth, constant-speed camera movement through the space. `;
       prompt += `Camera can gently move forward or pan across the room to showcase the space. `;
       prompt += `CRITICAL: Maintain CONSTANT speed throughout - no speeding up, no slowing down, no acceleration. `;
       prompt += `Slow, cinematic movement taking the full ${VIDEO_DURATION} seconds. `;
       prompt += `Professional real estate walkthrough feel. `;
-      prompt += `ONLY allow existing ceiling fans already visible in the source image to spin their blades slowly. `;
-      prompt += `Do NOT add ceiling fans or light fixtures that are not in the source image. `;
-      prompt += `Towels, curtains, and all fabrics remain completely still with no air movement. `;
     }
 
-    // Common constraints - CRITICAL: No hallucinations
-    prompt += `CRITICAL: Use ONLY elements visible in the source image. `;
-    prompt += `Do NOT add curtains, window treatments, furniture, or decorative elements. `;
-    prompt += `Do NOT create or imagine any elements not in the input image. `;
-    prompt += `Stop before revealing any area not visible in the input image. `;
-    prompt += `Maintain exact object positions and lighting from the input image.`;
+    // STRICT ANTI-HALLUCINATION RULES - Apply to ALL shots
+    prompt += `STRICT RULES - DO NOT VIOLATE: `;
+    prompt += `1. NEVER add ceiling fans that are not already in the source image. `;
+    prompt += `2. NEVER add curtains, drapes, or window treatments that are not in the source image. `;
+    prompt += `3. NEVER add windows or doors that are not in the source image. `;
+    prompt += `4. NEVER add furniture, fixtures, or decorations not in the source image. `;
+    prompt += `5. NEVER add light fixtures, chandeliers, or pendant lights not in the source image. `;
+    prompt += `6. If a ceiling fan EXISTS in the source image, it may spin slowly. Otherwise NO ceiling fans. `;
+    prompt += `7. All curtains, towels, and fabrics must remain COMPLETELY STILL - no movement, no wind. `;
+    prompt += `8. Stop motion BEFORE revealing any area not visible in the source image. `;
+    prompt += `9. Preserve EXACT positions of all objects from the source image. `;
+    prompt += `OUTPUT ONLY what exists in the input image - add NOTHING new.`;
 
     return prompt;
   }
