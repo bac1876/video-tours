@@ -28,8 +28,8 @@ export class PromptService {
       prompt += `Keep all these elements in their exact positions. `;
     }
 
-    // First image is assumed to be exterior, or AI detected exterior
-    const isExteriorShot = roomIndex === 0 || isExterior === true;
+    // Only use exterior prompt when AI detects it as exterior
+    const isExteriorShot = isExterior === true;
 
     if (isExteriorShot) {
       // EXTERIOR: Lateral movement only - never move toward the building
