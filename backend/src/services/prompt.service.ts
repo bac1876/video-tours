@@ -33,15 +33,13 @@ export class PromptService {
 
     if (isExteriorShot) {
       // EXTERIOR: Lateral movement only - never move toward the building
-      prompt += `Exterior establishing shot with LATERAL camera movement only. `;
-      prompt += `Camera slides slowly LEFT TO RIGHT (or right to left) - moving PARALLEL to the building. `;
-      prompt += `DO NOT move the camera forward toward the building. DO NOT approach the house. `;
-      prompt += `The camera travels sideways, keeping constant distance from all structures. `;
-      prompt += `Very slow, smooth slide over ${VIDEO_DURATION} seconds. `;
-      prompt += `DO NOT enter any doorways, windows, or openings. Stay completely outside. `;
-      prompt += `Windows and doors remain opaque - do not show or create interior rooms. `;
-      prompt += `Trees, plants, grass remain completely still - no wind effect. `;
-      prompt += `ABSOLUTE PROHIBITION: No ceiling fans (there are none outdoors), no interior elements. `;
+      prompt += `Outdoor exterior shot. This is OUTSIDE - open sky, yard, trees, grass, building exterior. `;
+      prompt += `Camera slides slowly LEFT TO RIGHT - moving PARALLEL to the building. `;
+      prompt += `DO NOT move forward toward the building. Stay at constant distance. `;
+      prompt += `Very slow, smooth lateral slide over ${VIDEO_DURATION} seconds. `;
+      prompt += `Stay completely outside. Do not enter doorways or windows. `;
+      prompt += `Trees, plants, grass remain completely still - no wind. `;
+      prompt += `This is an OUTDOOR scene - only outdoor elements exist here. `;
     } else if (isSmallRoom) {
       // SMALL ROOM (bedroom, bathroom): Rotation only, no zoom
       prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
