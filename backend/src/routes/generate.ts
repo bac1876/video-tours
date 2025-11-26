@@ -5,6 +5,7 @@ import { storageService } from '../services/storage.service';
 import { ffmpegService } from '../services/ffmpeg.service';
 import { promptService } from '../services/prompt.service';
 import { visionService } from '../services/vision.service';
+import { detectRoomFromFilename, RoomType } from '../services/roomDetection.service';
 import { videoQueue } from '../services/queue.service';
 import { validateUrl, validateVideoClips } from '../utils/validation';
 import { asyncHandler } from '../utils/errors';
@@ -19,7 +20,7 @@ const router = Router();
 router.post(
   '/room-video',
   asyncHandler(async (req: Request, res: Response) => {
-    const { imageUrl, prompt, order, roomDescription }: GenerateRoomVideoRequest = req.body;
+    const { imageUrl, prompt, order, roomDescription, filename }: GenerateRoomVideoRequest = req.body;
 
     if (!imageUrl) {
       return res.status(400).json({
@@ -34,28 +35,42 @@ router.post(
     const roomIndex = order || 0;
     console.log(`Generating video for room ${roomIndex}...`);
     console.log(`Image URL: ${imageUrl}`);
-
-    // Analyze image with GPT-5 Vision to get room type, size, and spatial info
-    let enhancedDescription = roomDescription;
-    let isExterior = roomIndex === 0; // First image assumed exterior
-    let isSmallRoom = false;
-
-    console.log('Analyzing image with GPT Vision...');
-    const visionAnalysis = await visionService.analyzeRoomImage(imageUrl);
-    if (visionAnalysis) {
-      isExterior = visionAnalysis.isExterior || roomIndex === 0;
-      isSmallRoom = visionAnalysis.isSmallRoom;
-      console.log(`Room type: ${visionAnalysis.roomType}, Exterior: ${isExterior}, Small room: ${isSmallRoom}`);
-
-      if (!roomDescription) {
-        enhancedDescription = visionService.generateSpatialPrompt(visionAnalysis);
-        console.log('Vision-enhanced description:', enhancedDescription);
-      }
-    } else if (roomDescription) {
-      console.log('Using user-provided description:', roomDescription);
+    if (filename) {
+      console.log(`Original filename: ${filename}`);
     }
 
-    const finalPrompt = prompt || promptService.generateRoomPrompt(roomIndex, enhancedDescription, isExterior, isSmallRoom);
+    // Priority 1: Filename-based room detection
+    let roomType: RoomType = 'unknown';
+    let isExterior = false;
+    let isSmallRoom = false;
+    let enhancedDescription = roomDescription;
+
+    if (filename) {
+      const detection = detectRoomFromFilename(filename);
+      roomType = detection.roomType;
+      isExterior = detection.isExterior;
+      isSmallRoom = detection.isSmallRoom;
+      console.log(`Detected from filename "${filename}": ${roomType}, Exterior: ${isExterior}, Small: ${isSmallRoom}`);
+    }
+
+    // Priority 2: Vision analysis (only if filename didn't detect room type)
+    if (roomType === 'unknown') {
+      console.log('Filename did not match known patterns, using vision analysis...');
+      const visionAnalysis = await visionService.analyzeRoomImage(imageUrl);
+      if (visionAnalysis) {
+        isExterior = visionAnalysis.isExterior;
+        isSmallRoom = visionAnalysis.isSmallRoom;
+        console.log(`Vision detected: Exterior: ${isExterior}, Small room: ${isSmallRoom}`);
+
+        if (!roomDescription) {
+          enhancedDescription = visionService.generateSpatialPrompt(visionAnalysis);
+          console.log('Vision-enhanced description:', enhancedDescription);
+        }
+      }
+    }
+
+    // Generate prompt based on room type (from filename or vision)
+    const finalPrompt = prompt || promptService.generateRoomPromptByType(roomType, enhancedDescription);
 
     console.log(`Final prompt: ${finalPrompt}`);
 

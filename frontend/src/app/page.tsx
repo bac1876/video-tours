@@ -84,7 +84,7 @@ export default function Home() {
     setRegeneratingIndex(clipIndex);
 
     try {
-      const response = await api.generateRoomVideo(photo.url, '', photo.order, photo.description);
+      const response = await api.generateRoomVideo(photo.url, '', photo.order, photo.description, photo.filename);
       const newClip: VideoClip = {
         url: response.videoUrl,
         duration: response.duration,

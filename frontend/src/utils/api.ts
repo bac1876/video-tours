@@ -54,7 +54,8 @@ export const api = {
     imageUrl: string,
     prompt: string,
     order: number,
-    roomDescription?: string
+    roomDescription?: string,
+    filename?: string
   ): Promise<GenerateRoomVideoResponse> {
     const response = await apiClient.post<GenerateRoomVideoResponse>(
       '/api/generate/room-video',
@@ -63,6 +64,7 @@ export const api = {
         prompt,
         order,
         roomDescription,
+        filename,
       }
     );
 

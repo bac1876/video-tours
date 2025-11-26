@@ -45,7 +45,8 @@ export const useGenerateVideos = () => {
     imageUrl: string,
     prompt: string,
     order: number,
-    roomDescription?: string
+    roomDescription?: string,
+    filename?: string
   ): Promise<VideoClip | null> => {
     try {
       setProgress({
@@ -54,7 +55,7 @@ export const useGenerateVideos = () => {
         message: `Generating video for room ${order + 1}...`,
       });
 
-      const response = await api.generateRoomVideo(imageUrl, prompt, order, roomDescription);
+      const response = await api.generateRoomVideo(imageUrl, prompt, order, roomDescription, filename);
 
       return {
         url: response.videoUrl,
@@ -84,7 +85,7 @@ export const useGenerateVideos = () => {
 
       for (let i = 0; i < photos.length; i++) {
         const photo = photos[i];
-        const clip = await generateRoomVideo(photo.url, '', photo.order, photo.description);
+        const clip = await generateRoomVideo(photo.url, '', photo.order, photo.description, photo.filename);
 
         if (clip) {
           clips.push(clip);

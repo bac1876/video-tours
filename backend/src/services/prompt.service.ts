@@ -1,3 +1,5 @@
+import { RoomType } from './roomDetection.service';
+
 const VIDEO_DURATION = parseInt(process.env.VIDEO_DURATION || '6');
 
 const cameraMotions = [
@@ -86,6 +88,67 @@ export class PromptService {
 
   getVideoDuration(): number {
     return VIDEO_DURATION;
+  }
+
+  /**
+   * Generate prompt based on detected room type from filename
+   */
+  generateRoomPromptByType(roomType: RoomType, roomDescription?: string): string {
+    let prompt = '';
+
+    if (roomDescription) {
+      prompt += `This scene contains: ${roomDescription}. `;
+    }
+
+    switch (roomType) {
+      case 'front_exterior':
+        // FRONT: Slow push-in toward house is safe (no windows to zoom into)
+        prompt += `Exterior front shot of house. `;
+        prompt += `Camera slowly pushes forward toward the house entrance. `;
+        prompt += `Smooth, cinematic approach over ${VIDEO_DURATION} seconds. `;
+        prompt += `Real estate showcase feel - welcoming and inviting. `;
+        prompt += `Maintain static architecture - house structure does not change. `;
+        prompt += `Do NOT add any elements not visible in the source image. `;
+        break;
+
+      case 'back_exterior':
+        // BACKYARD: Cinemagraph style - NO forward movement (prevents window hallucinations)
+        prompt += `Cinemagraph style. Static house architecture. Static roof. Static eaves. `;
+        prompt += `Camera holds completely steady - NO zoom, NO push-in, NO dolly. `;
+        prompt += `Only very subtle ambient movement. `;
+        prompt += `This is an exterior establishing shot over ${VIDEO_DURATION} seconds. `;
+        prompt += `Preserve exact pixel structure of the house - no new architectural details. `;
+        prompt += `Do NOT add ceiling fans, light fixtures, or any indoor elements. `;
+        break;
+
+      case 'bedroom':
+      case 'bathroom':
+      case 'office':
+        // SMALL ROOMS: Rotation only, no zoom
+        prompt += `Camera rotates slowly in place - like standing on a lazy susan. `;
+        prompt += `The viewer slowly turns their gaze across the room. `;
+        prompt += `NO zoom in or out. NO forward/backward movement. `;
+        prompt += `Only the viewing angle changes over ${VIDEO_DURATION} seconds. `;
+        prompt += `ONLY allow existing ceiling fans already visible in the source image to spin slowly. `;
+        prompt += `Do NOT add ceiling fans or light fixtures that are not in the source image. `;
+        break;
+
+      default:
+        // LARGE INTERIOR ROOMS (kitchen, living, dining, etc.): Movement OK
+        prompt += `Smooth camera movement through the space. `;
+        prompt += `Camera can gently move forward or pan across the room. `;
+        prompt += `Slow, cinematic movement over ${VIDEO_DURATION} seconds. `;
+        prompt += `Professional real estate walkthrough feel. `;
+        prompt += `ONLY allow existing ceiling fans already visible in the source image to spin slowly. `;
+        prompt += `Do NOT add ceiling fans or light fixtures that are not in the source image. `;
+    }
+
+    // Common anti-hallucination constraints
+    prompt += `CRITICAL: Use ONLY elements visible in the source image. `;
+    prompt += `Do NOT add furniture, fixtures, decorations, or window treatments. `;
+    prompt += `Maintain exact object positions from the input image.`;
+
+    return prompt;
   }
 }
 

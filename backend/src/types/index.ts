@@ -17,6 +17,7 @@ export interface GenerateRoomVideoRequest {
   prompt?: string;
   order: number;
   roomDescription?: string;
+  filename?: string;
 }
 
 export interface GenerateRoomVideoResponse {
