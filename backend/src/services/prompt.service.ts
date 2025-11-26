@@ -41,7 +41,8 @@ export class PromptService {
       prompt += `Do NOT reveal or create interior details visible through windows. `;
       prompt += `Maintain stable, professional real estate video feel. `;
       prompt += `Trees, plants, grass, and foliage remain still - no wind effect. `;
-      prompt += `Do NOT add any ceiling fans, light fixtures, or indoor elements to outdoor scenes. `;
+      prompt += `ABSOLUTE PROHIBITION: Do NOT add ceiling fans - there are NO ceiling fans in outdoor spaces. `;
+      prompt += `Do NOT add any light fixtures, chandeliers, or indoor elements to outdoor scenes. `;
     } else if (isSmallRoom) {
       // SMALL ROOM (bedroom, bathroom): Rotation only, no zoom
       prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
