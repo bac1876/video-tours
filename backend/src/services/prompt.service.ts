@@ -32,17 +32,16 @@ export class PromptService {
     const isExteriorShot = roomIndex === 0 || isExterior === true;
 
     if (isExteriorShot) {
-      // EXTERIOR: Minimal movement to avoid window hallucinations
-      prompt += `Very gentle, subtle camera movement showcasing the exterior. `;
-      prompt += `Camera can drift forward slightly, but maintain distance from the house. `;
-      prompt += `IMPORTANT: Limit forward movement to no more than 5-10% closer to the subject. Keep most of the original framing visible. `;
-      prompt += `Very slow, gradual drift - take the full ${VIDEO_DURATION} seconds with minimal movement. `;
-      prompt += `CRITICAL: Do NOT zoom into windows or glass surfaces. `;
-      prompt += `Do NOT reveal or create interior details visible through windows. `;
-      prompt += `Maintain stable, professional real estate video feel. `;
-      prompt += `Trees, plants, grass, and foliage remain still - no wind effect. `;
-      prompt += `ABSOLUTE PROHIBITION: Do NOT add ceiling fans - there are NO ceiling fans in outdoor spaces. `;
-      prompt += `Do NOT add any light fixtures, chandeliers, or indoor elements to outdoor scenes. `;
+      // EXTERIOR: Lateral movement only - never move toward the building
+      prompt += `Exterior establishing shot with LATERAL camera movement only. `;
+      prompt += `Camera slides slowly LEFT TO RIGHT (or right to left) - moving PARALLEL to the building. `;
+      prompt += `DO NOT move the camera forward toward the building. DO NOT approach the house. `;
+      prompt += `The camera travels sideways, keeping constant distance from all structures. `;
+      prompt += `Very slow, smooth slide over ${VIDEO_DURATION} seconds. `;
+      prompt += `DO NOT enter any doorways, windows, or openings. Stay completely outside. `;
+      prompt += `Windows and doors remain opaque - do not show or create interior rooms. `;
+      prompt += `Trees, plants, grass remain completely still - no wind effect. `;
+      prompt += `ABSOLUTE PROHIBITION: No ceiling fans (there are none outdoors), no interior elements. `;
     } else if (isSmallRoom) {
       // SMALL ROOM (bedroom, bathroom): Rotation only, no zoom
       prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
