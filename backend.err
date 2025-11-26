@@ -1,0 +1,323 @@
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Redis connection failed. Switching to Mock Queue Mode.
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Redis connection failed. Switching to Mock Queue Mode.
+Error: connect ECONNREFUSED 127.0.0.1:6379
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1611:16) {
+  errno: -4078,
+  code: 'ECONNREFUSED',
+  syscall: 'connect',
+  address: '127.0.0.1',
+  port: 6379
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: '0Z039CYYQ37DJ1N8',
+    extendedRequestId: '61lEzV0DxKC4GDJPpqKqTjdmv1A2XzsEJNy8FVSBXWGZwR6fzL3JSihhcHYvgTiwIyp/mi0sZmc=',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: '0Z039CYYQ37DJ1N8',
+  HostId: '61lEzV0DxKC4GDJPpqKqTjdmv1A2XzsEJNy8FVSBXWGZwR6fzL3JSihhcHYvgTiwIyp/mi0sZmc='
+}
+Error: AppError: Storage error: Failed to upload file: The AWS Access Key Id you provided does not exist in our records.
+    at new StorageError (C:\Users\Owner\Claude Code Projects\videotours\backend\src\utils\errors.ts:27:5)
+    at StorageService.uploadFile (C:\Users\Owner\Claude Code Projects\videotours\backend\src\services\storage.service.ts:85:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:57:19)
+    at async Promise.all (index 0)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:71:20) {
+  statusCode: 500,
+  isOperational: true
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: '0Z0883RQ58FXS2QZ',
+    extendedRequestId: '0sF2UpOPIXFMKP311nIqAKNXOrCn0LXqOeuLk0P/DtEEnsZWdEtiSuDwYPS6D73YAt1QuBdJkrE=',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: '0Z0883RQ58FXS2QZ',
+  HostId: '0sF2UpOPIXFMKP311nIqAKNXOrCn0LXqOeuLk0P/DtEEnsZWdEtiSuDwYPS6D73YAt1QuBdJkrE='
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: 'C7M8V96W1SNDW7M3',
+    extendedRequestId: 'eG5Az9FU+Yah9JjAP8stNy/pyzy7PW+7R0fRjTQCTvRdJr9+FwBMqafPa44+LhBZ9sAmltb8/e0=',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: 'C7M8V96W1SNDW7M3',
+  HostId: 'eG5Az9FU+Yah9JjAP8stNy/pyzy7PW+7R0fRjTQCTvRdJr9+FwBMqafPa44+LhBZ9sAmltb8/e0='
+}
+Error: AppError: Storage error: Failed to upload file: The AWS Access Key Id you provided does not exist in our records.
+    at new StorageError (C:\Users\Owner\Claude Code Projects\videotours\backend\src\utils\errors.ts:27:5)
+    at StorageService.uploadFile (C:\Users\Owner\Claude Code Projects\videotours\backend\src\services\storage.service.ts:85:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:57:19)
+    at async Promise.all (index 1)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:71:20) {
+  statusCode: 500,
+  isOperational: true
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: 'C7MF1QD370Z5M4W3',
+    extendedRequestId: 'zu6DkG8wVeZpMFjTmG1v00cwRLn+7B9rBp0dqfd3DIOPUGZVCHyxw6D5aRWjRiHTrHDnlPkH69g=',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: 'C7MF1QD370Z5M4W3',
+  HostId: 'zu6DkG8wVeZpMFjTmG1v00cwRLn+7B9rBp0dqfd3DIOPUGZVCHyxw6D5aRWjRiHTrHDnlPkH69g='
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: 'X9H11X2JK7746118',
+    extendedRequestId: '0i3esmiNZCs3yofC13BdMHGRxEFQWnaI1JV1fU/p57/ksZr6O6gCe5ov+cpcQ3vH6vC6OXIgjiI=',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: 'X9H11X2JK7746118',
+  HostId: '0i3esmiNZCs3yofC13BdMHGRxEFQWnaI1JV1fU/p57/ksZr6O6gCe5ov+cpcQ3vH6vC6OXIgjiI='
+}
+Error: AppError: Storage error: Failed to upload file: The AWS Access Key Id you provided does not exist in our records.
+    at new StorageError (C:\Users\Owner\Claude Code Projects\videotours\backend\src\utils\errors.ts:27:5)
+    at StorageService.uploadFile (C:\Users\Owner\Claude Code Projects\videotours\backend\src\services\storage.service.ts:85:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:57:19)
+    at async Promise.all (index 1)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:71:20) {
+  statusCode: 500,
+  isOperational: true
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: 'X9HEJZT1KH2YJ4FS',
+    extendedRequestId: 'oAYwEbnfqy7uK26t9+FKsOwdEOAzIBCvfTn3TsolKBcDwpUu5p4PcFXas+OD5QzF0kMc1FCpDM8=',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: 'X9HEJZT1KH2YJ4FS',
+  HostId: 'oAYwEbnfqy7uK26t9+FKsOwdEOAzIBCvfTn3TsolKBcDwpUu5p4PcFXas+OD5QzF0kMc1FCpDM8='
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: '8NHKMKZRJX4BDAC8',
+    extendedRequestId: 'L7WmqvoEvtDI9kvsaw1+7cfM3UmwaOzGgEIgaRBNhf95QfAfawFETqh2dRUv2rD5egE2f3DHrfAcJXED/ore+ClaqB0CK+DH',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: '8NHKMKZRJX4BDAC8',
+  HostId: 'L7WmqvoEvtDI9kvsaw1+7cfM3UmwaOzGgEIgaRBNhf95QfAfawFETqh2dRUv2rD5egE2f3DHrfAcJXED/ore+ClaqB0CK+DH'
+}
+Error: AppError: Storage error: Failed to upload file: The AWS Access Key Id you provided does not exist in our records.
+    at new StorageError (C:\Users\Owner\Claude Code Projects\videotours\backend\src\utils\errors.ts:27:5)
+    at StorageService.uploadFile (C:\Users\Owner\Claude Code Projects\videotours\backend\src\services\storage.service.ts:85:13)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:57:19)
+    at async Promise.all (index 0)
+    at async <anonymous> (C:\Users\Owner\Claude Code Projects\videotours\backend\src\routes\upload.ts:71:20) {
+  statusCode: 500,
+  isOperational: true
+}
+Full S3 upload error: InvalidAccessKeyId: The AWS Access Key Id you provided does not exist in our records.
+    at throwDefaultError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:844:20)
+    at C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\smithy-client\dist-cjs\index.js:853:5
+    at de_CommandError (C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\client-s3\dist-cjs\index.js:4742:14)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-serde\dist-cjs\index.js:35:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-signing\dist-cjs\index.js:226:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@smithy\middleware-retry\dist-cjs\index.js:320:38
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-flexible-checksums\dist-cjs\index.js:174:18
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:98:20
+    at async C:\Users\Owner\Claude Code Projects\videotours\backend\node_modules\@aws-sdk\middleware-sdk-s3\dist-cjs\index.js:121:14 {
+  '$fault': 'client',
+  '$metadata': {
+    httpStatusCode: 403,
+    requestId: '8NHYP392TA6VCTS8',
+    extendedRequestId: 'hEQTuOvri0ilwtxcNF+qHHBB1/CRuPCeqaz75RvTGFqfYNr/FYzLgMINPHpHc5OUbVG7CoJSnqtlkd2S05AU5RHfZtcJMtMF',
+    cfId: undefined,
+    attempts: 1,
+    totalRetryDelay: 0
+  },
+  Code: 'InvalidAccessKeyId',
+  AWSAccessKeyId: 'your_aws_access_key',
+  RequestId: '8NHYP392TA6VCTS8',
+  HostId: 'hEQTuOvri0ilwtxcNF+qHHBB1/CRuPCeqaz75RvTGFqfYNr/FYzLgMINPHpHc5OUbVG7CoJSnqtlkd2S05AU5RHfZtcJMtMF'
+}
+^C

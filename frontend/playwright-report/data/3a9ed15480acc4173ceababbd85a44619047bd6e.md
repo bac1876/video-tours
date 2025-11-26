@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e5]:
+        - generic [ref=e6]:
+          - img [ref=e8]
+          - generic [ref=e10]:
+            - heading "Home Video Tours" [level=1] [ref=e11]
+            - paragraph [ref=e12]: AI Video Generator
+        - generic [ref=e14]: Powered by Grok AI
+    - main [ref=e15]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - heading "Property Information" [level=2] [ref=e19]
+          - paragraph [ref=e20]: Enter property details and upload 1-15 room photos
+        - generic [ref=e21]:
+          - heading "Property Details" [level=3] [ref=e22]
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - generic [ref=e25]: Property Address
+              - textbox "123 Main Street, City, State ZIP" [ref=e26]
+            - generic [ref=e27]:
+              - generic [ref=e28]: List Price
+              - textbox "$599,000" [ref=e29]
+            - generic [ref=e30]:
+              - generic [ref=e31]: Agent Name
+              - textbox "John Smith" [ref=e32]
+            - generic [ref=e33]:
+              - generic [ref=e34]: Company
+              - textbox "ABC Realty" [ref=e35]
+            - generic [ref=e36]:
+              - generic [ref=e37]: Phone Number
+              - textbox "(555) 123-4567" [ref=e38]
+        - heading "Upload Room Photos" [level=3] [ref=e40]
+        - generic [ref=e41] [cursor=pointer]:
+          - button "Choose File" [ref=e42]
+          - generic [ref=e43]:
+            - img [ref=e44]
+            - generic [ref=e46]:
+              - paragraph [ref=e47]: Drag & drop photos here, or click to browse
+              - paragraph [ref=e48]: JPG, PNG, or WebP (max 10MB per file, up to 15 files)
+        - paragraph [ref=e50]: Please fill in all property and agent information
+        - generic [ref=e51]:
+          - generic [ref=e52]:
+            - heading "Selected Photos (1/15)" [level=3] [ref=e53]
+            - button "Clear All" [ref=e54] [cursor=pointer]
+          - generic [ref=e56]:
+            - generic [ref=e57]:
+              - img "DSC01298.jpg" [ref=e58]
+              - button [ref=e59] [cursor=pointer]:
+                - img [ref=e60]
+            - paragraph [ref=e62]: DSC01298.jpg
+            - textbox "Room description (e.g., Living room, TV on left wall, fireplace on right)" [ref=e63]
+          - button "Continue with 1 photo" [active] [ref=e64] [cursor=pointer]
+    - contentinfo [ref=e71]:
+      - generic [ref=e73]:
+        - paragraph [ref=e74]: © 2025 Home Video Tours. All rights reserved.
+        - paragraph [ref=e75]: Create stunning real estate walkthroughs with AI-powered video generation
+  - alert [ref=e76]
+```

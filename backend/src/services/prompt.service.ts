@@ -32,14 +32,13 @@ export class PromptService {
     const isExteriorShot = isExterior === true;
 
     if (isExteriorShot) {
-      // EXTERIOR: Lateral movement only - never move toward the building
-      prompt += `Outdoor exterior shot. This is OUTSIDE - open sky, yard, trees, grass, building exterior. `;
-      prompt += `Camera slides slowly LEFT TO RIGHT - moving PARALLEL to the building. `;
-      prompt += `DO NOT move forward toward the building. Stay at constant distance. `;
-      prompt += `Very slow, smooth lateral slide over ${VIDEO_DURATION} seconds. `;
-      prompt += `Stay completely outside. Do not enter doorways or windows. `;
-      prompt += `Trees, plants, grass remain completely still - no wind. `;
-      prompt += `This is an OUTDOOR scene - only outdoor elements exist here. `;
+      // EXTERIOR: Cinemagraph style - static architecture, only natural movement
+      prompt += `Cinemagraph style. Static house architecture. Static roof. Static eaves. Static structure. `;
+      prompt += `The building, walls, roof, windows, doors, and all architectural elements remain completely frozen and unchanged. `;
+      prompt += `Only natural outdoor movement: gentle leaf sway, grass movement, clouds drifting, water rippling if present. `;
+      prompt += `Camera holds steady or drifts very slightly - no zoom, no push-in, no dolly forward. `;
+      prompt += `This is an exterior establishing shot over ${VIDEO_DURATION} seconds. `;
+      prompt += `Preserve exact pixel structure of the house - no new architectural details. `;
     } else if (isSmallRoom) {
       // SMALL ROOM (bedroom, bathroom): Rotation only, no zoom
       prompt += `Simulate a person standing still in the center of the room, slowly rotating their head to look around. `;
